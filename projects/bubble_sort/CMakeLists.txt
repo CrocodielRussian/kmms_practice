@@ -1,3 +1,3 @@
 project(bubble_sort)
 
-add_executable(${PROJECT_NAME} bubble_sort.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
