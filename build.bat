@@ -1,5 +1,6 @@
 @echo off
 
+setlocal EnableDelayedExpansion
 
 set BUILD_TYPE=Ninja
 set BUILD_SUFFIX=ninja
@@ -17,5 +18,13 @@ cd %BUILD_FOLDER%
 cmake -G %BUILD_TYPE% ..\%SOURCE_FOLDER%
 cmake --build
 
-copy ..\%SOURCE_FOLDER%\bubble_sort\run_bubble_sort.bat .\bubble_sort
-copy ..\%SOURCE_FOLDER%\bubble_sort_split\run_bubble_sort_split.bat .\bubble_sort_split
+
+set arr[0].file=run_bubble_sort.bat
+set arr[1].file=run_bubble_sort_split.bat
+
+set arr[0].folder=bubble_sort
+set arr[1].folder=bubble_sort_split
+
+for /L %%i in (0,1,1) do ( 
+	copy ..\%SOURCE_FOLDER%\!arr[%%i].folder!\!arr[%%i].file! .\!arr[%%i].folder!
+)
