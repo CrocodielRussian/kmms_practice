@@ -1,6 +1,5 @@
 @echo off
-
-::setlocal EnableDelayedExpansion
+setlocal EnableDelayedExpansion
 
 set BUILD_TYPE=Ninja
 set BUILD_SUFFIX=ninja
@@ -19,11 +18,11 @@ cmake -G %BUILD_TYPE% ..\%SOURCE_FOLDER%
 cmake --build .
 
 
-set arr[0].file=run_bubble_sort.bat
+set arr[0].file=run_bubble.bat
 set arr[1].file=run_bubble_sort_split.bat
-set arr[2].file=run_refactoring_proj.bat
-set arr[3].folder=hello.bat
-set arr[4].folder=my_project.bat
+set arr[2].file=run_refactoring.bat
+set arr[3].file=run_hello.bat
+set arr[4].file=run_my_project.bat
 
 set arr[0].folder=bubble_sort
 set arr[1].folder=bubble_sort_split
@@ -32,6 +31,8 @@ set arr[3].folder=hello
 set arr[4].folder=my_project
 
 
-for /L %%i in (0,1,4) do ( 
+for /L %%i in (0, 1, 4) do (
 	copy ..\%SOURCE_FOLDER%\!arr[%%i].folder!\!arr[%%i].file! .\!arr[%%i].folder!
 )
+
+::copy ..\run_tests.bat .
