@@ -31,7 +31,7 @@ set arr[3].folder=hello
 set arr[4].folder=my_project
 
 
-for /L %%i in (0, 1, 5) do (
+for /L %%i in (0, 1, 4) do (
 	copy ..\%SOURCE_FOLDER%\!arr[%%i].folder!\!arr[%%i].file! .\!arr[%%i].folder!
 )
 
