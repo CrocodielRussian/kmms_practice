@@ -1,4 +1,4 @@
-project(bubble_sort_test)
+project(unit_test)
 
 add_library(bubble_sort_lib "")
 

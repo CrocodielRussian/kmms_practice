@@ -10,6 +10,6 @@ add_subdirectory(bubble_sort_split)
 add_subdirectory(refactoring_proj)
 add_subdirectory(hello)
 add_subdirectory(my_project)
-add_subdirectory(bubble_sort_test)
+add_subdirectory(unit_test)
 
 set(CMAKE_SUPPRESS_REGENERATION true)

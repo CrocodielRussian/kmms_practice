@@ -1,4 +1,4 @@
-target_sources(bubble_sort_lib
+target_sources(bubble_sort_lib 
 	PRIVATE
 		bubble_sort.cpp
 	PUBLIC
