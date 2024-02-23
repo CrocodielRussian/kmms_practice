@@ -3,7 +3,7 @@
 
 #include "bubble_sort.hpp"
 
-TEST(ArraysEqual, AnyElementsCount) {
+TEST(ArraysEqual, Test1) {
 	std::vector<int> actual = {1, 8, 2, 5, 3, 11};
 	BubbleSort::sort(actual);
 	std::vector<int> expected = {1, 2, 3, 5, 8, 11};
@@ -17,6 +17,21 @@ TEST(ArraysEqual, AnyElementsCount) {
 			<< i;
 	}
 }
+TEST(ArraysEqual, Test2) {
+	std::vector<int> actual = {1, 8, 2, 5, 3, 11};
+	BubbleSort::sort(actual);
+	std::vector<int> expected = {1, 3, 2, 5, 8, 11};
+	
+	ASSERT_EQ(expected.size(), actual.size())
+		<< "Разные размеры ожидаемого и отсортированного массивов";
+	
+	for (int i = 0; i < actual.size(); i++) {
+		ASSERT_EQ(expected[i], actual[i]) 
+			<< "Массив ожидаемый и отсортировнный отличаются в элементе с индексом "
+			<< i;
+	}
+}
+
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
