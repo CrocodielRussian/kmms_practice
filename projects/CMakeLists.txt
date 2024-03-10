@@ -11,5 +11,6 @@ add_subdirectory(refactoring_proj)
 add_subdirectory(hello)
 add_subdirectory(my_project)
 add_subdirectory(unit_test)
+add_subdirectory(scl)
 
 set(CMAKE_SUPPRESS_REGENERATION true)
