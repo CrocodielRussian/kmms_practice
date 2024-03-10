@@ -42,9 +42,8 @@ namespace IBusko {
 			LongNumber operator % (const LongNumber& x);
 			
 			int get_digits_number() const;
-            int get_sign() const;
 			int get_sum() const;
-			
+            int get_sign() const;
 			bool is_positive() const;
 			
 			friend std::ostream& operator << (std::ostream &os, const LongNumber& x);
@@ -53,5 +52,6 @@ namespace IBusko {
             int get_length(const char* const str) const;
             int sum_of_arr(int* numbers, int size) const;
             void sum_of_num(int &numbers, int size);
+            void write_number(const char* const str, int* numbers, int size, int index);
 	};
 }
