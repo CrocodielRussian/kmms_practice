@@ -26,8 +26,8 @@ namespace IBusko {
         }
         write_number(str, numbers, length, index);
 
-		this->sum = sum_of_arr(numbers, length);
-		//std::cout << "create1 " << this << "\n";
+		this->sum = sum_of_arr(numbers, length, sign);
+//		std::cout << "create1 " << this << "\n";
 	}
 	
 	LongNumber::LongNumber(const LongNumber& x) {
@@ -40,7 +40,7 @@ namespace IBusko {
             numbers[i] = x.numbers[i];
         }
 
-        std::cout << "create2 " << this << "\n";
+//        std::cout << "create2 " << this << "\n";
 
 	}
 	
@@ -59,11 +59,11 @@ namespace IBusko {
         x.sum = 0;
         x.sign = 0;
 
-        std::cout << "create3 " << this << "\n";
+//        std::cout << "create3 " << this << "\n";
 	}
 	
 	LongNumber::~LongNumber() {
-		//std::cout << "delete " << this << "\n";
+//		std::cout << "delete " << this << "\n";
 		delete[] numbers;
 	}
 	
@@ -92,8 +92,8 @@ namespace IBusko {
 
         write_number(str, numbers, length, index);
 
-        this->sum = sum_of_arr(numbers, length);
-        std::cout << "operator 1" << "\n";
+        this->sum = sum_of_arr(numbers, length, sign);
+//        std::cout << "operator 1" << "\n";
 		return *this;
 	}
 
@@ -110,7 +110,7 @@ namespace IBusko {
         for(int i = 0; i < length; i++){
             numbers[i] = x.numbers[i];
         }
-        std::cout << "operator 2" << "\n";
+//        std::cout << "operator 2" << "\n";
 
 		return *this;
 	}
@@ -123,15 +123,15 @@ namespace IBusko {
         if(this->numbers != nullptr) {
             delete[] this->numbers;
         }
-        std::cout << "first\n";
+
         this->numbers = x.numbers;
 
-        delete[] x.numbers;
+        x.numbers = nullptr;
         x.length = 0;
         x.sum = 0;
         x.sign = 0;
 
-        std::cout << "operator 3" << "\n";
+//        std::cout << "operator 3" << "\n";
 		return *this;
 	}
 	
@@ -155,33 +155,64 @@ namespace IBusko {
 	bool LongNumber::operator > (const LongNumber& x) {
         if(this->get_sign() > x.get_sign()){
             return true;
-        }
-        if(this->get_digits_number() > x.get_digits_number()){
-            return true;
-        }
+        }else if(this->get_sign() < x.get_sign()){
+            return false;
+        }else{
+            if(this->get_digits_number() > x.get_digits_number()){
+                if(this->get_sign() == 1)
+                    return true;
+                else
+                    return false;
+            }else if(this->get_digits_number() < x.get_digits_number()){
+                if(this->get_sign() == 1)
+                    return false;
+                else
+                    return true;
+            }else{
+                for(int i = length-1; i >= 0; i--){
+                    if(this->numbers[i] > x.numbers[i]){
+                        if(this->get_sign() == 1)
+                            return true;
+                        else
+                            return false;
 
-        for(int i = length-1; i >= 0; i--){
-            if(this->numbers[i] > x.numbers[i]){
-                return true;
+                    }
+                }
             }
         }
+
 		return false;
 	}
 
 	bool LongNumber::operator < (const LongNumber& x) {
         if(this->get_sign() < x.get_sign()){
             return true;
-        }
-        if(this->get_digits_number() < x.get_digits_number()){
-            return true;
-        }
-
-        for(int i = length-1; i >= 0; i--){
-            if(this->numbers[i] < x.numbers[i]){
-                return true;
+        }else if(this->get_sign() > x.get_sign()){
+            return false;
+        }else{
+            if(this->get_digits_number() < x.get_digits_number()){
+                if(this->get_sign() == 1)
+                    return true;
+                else
+                    return false;
+            }else if(this->get_digits_number() > x.get_digits_number()){
+                if(this->get_sign() == 1)
+                    return false;
+                else
+                    return true;
+            }else{
+                for(int i = length-1; i >= 0; i--){
+                    if(this->numbers[i] < x.numbers[i]){
+                        if(this->get_sign() == 1){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+                }
             }
         }
-		return false;
+        return false;
 	}
 	
 	LongNumber LongNumber::operator + (const LongNumber& x) {
@@ -189,17 +220,21 @@ namespace IBusko {
         int size = std::max(x.length, length) + 1;
         result.length = size;
         result.numbers = new int[size];
-        for(int i = 0; i < result.length; i++){
+        for(int i = 0; i < result.get_digits_number(); i++){
             result.numbers[i] = 0;
-
         }
 
         if(this->get_sign() == x.get_sign()){
-
+            result.sign = x.get_sign();
+            addition_of_num(numbers, size, result, x);
         }else{
-
+            if(*this > x){
+                result.sign = this->get_sign();
+            }else{
+                result.sign = x.get_sign();
+            }
+            subtraction_of_num(numbers, size, result, x);
         }
-        short sum;
         //std::cout << "first" << "\n";
 
 //        for(int i = 0; i < size; i++){
@@ -209,14 +244,39 @@ namespace IBusko {
 
         //std::cout << "second" << "\n";
 
-        result.sum = sum_of_arr(result.numbers, result.length);
+        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 		return result;
 	}
 	
 	LongNumber LongNumber::operator - (const LongNumber& x) {
-		// TODO
-		LongNumber result = x;
-		return result;
+        LongNumber result;
+        int size = std::max(x.length, length) + 1;
+        result.length = size;
+        result.numbers = new int[size];
+        for(int i = 0; i < result.length; i++){
+            result.numbers[i] = 0;
+        }
+
+        if(this->get_sign() == 1 && x.get_sign() == -1){
+            result.sign = this->get_sign();
+            addition_of_num(numbers, size, result, x);
+        }else{
+            if(*this > x){
+                result.sign = this->get_sign();
+            }else{
+                result.sign = x.get_sign();
+            }
+            subtraction_of_num(numbers, size, result, x);
+        }
+        //std::cout << "first" << "\n";
+//        for(int i = 0; i < size; i++){
+//            std::cout << result.numbers[i] << " ";
+//        }
+//        std::cout << "\n";
+        //std::cout << "second" << "\n";
+
+        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
+        return result;
 	}
 
 	LongNumber LongNumber::operator * (const LongNumber& x) {
@@ -262,23 +322,42 @@ namespace IBusko {
         }
         return length;
 	}
-    void LongNumber::sum_of_num(int* numbers, int size, int* result, LongNumber& x) {
+    void LongNumber::addition_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x) {
+        short sum;
         for(int i = 0; i < size - 1; i++){
             sum = 0;
             if(x.length > i)
                 sum += x.numbers[i];
             if(length > i)
                 sum += numbers[i];
-            result.numbers[i] = sum % 10;
+            result.numbers[i] += sum % 10;
             if(sum > 9)
                 result.numbers[i+1]++;
         }
     }
+    void LongNumber::subtraction_of_num(int *numbers, int size, LongNumber& result, const LongNumber& x) {
+        short diff;
+
+        for(int i = size - 2; i >= 0; i--){
+            diff = 0;
+            if(x.length > i)
+                diff += x.numbers[i];
+            if(length > i)
+                diff -= numbers[i];
+            //std::cout << diff << "\n";
+            result.numbers[i] += abs(diff % 10);
+            if(abs(diff) > 9)
+                result.numbers[i+1]--;
+            //std::cout << result.numbers[i] << " ";
+        }
+        std::cout << "\n";
+    }
 	
-	int LongNumber::sum_of_arr(int* numbers, int size) const {
+	int LongNumber::sum_of_arr(int* numbers, int size, int sign) const {
 		int s = 0;
 		for(int i = 0; i < std::min(size, 7); i++)
 			s += pow(10, i) * numbers[i];
+        s *= sign;
 		return s;
 	}
     void LongNumber::write_number(const char *const str, int *numbers, int size, int index) {
