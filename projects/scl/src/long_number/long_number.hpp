@@ -44,14 +44,15 @@ namespace IBusko {
 			int get_digits_number() const;
 			int get_sum() const;
             int get_sign() const;
+            bool more_compare_by_module(const LongNumber& x);
 			bool is_positive() const;
-			
+
 			friend std::ostream& operator << (std::ostream &os, const LongNumber& x);
 
         private:
+            void addition_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
             int get_length(const char* const str) const;
             int sum_of_arr(int* numbers, int size, int sign) const;
-            void addition_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
             void subtraction_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
             void write_number(const char* const str, int* numbers, int size, int index);
 	};

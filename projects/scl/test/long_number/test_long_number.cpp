@@ -83,10 +83,15 @@ TEST_F(MoreFixture, different_numbers_with_equal_length){
     ASSERT_TRUE(one_hundred_three > one_hundred_two)
         << "An One hundred three less then an one hundred two " << one_hundred_two.get_sum() << " > " << one_hundred_three.get_sum();
 }
-TEST_F(MoreFixture, more_neg_logical){
+TEST_F(MoreFixture, more_neg_logical1){
     ASSERT_FALSE(fifteen_neg > thirteen_neg)
         << "Incorrect negative logical " << fifteen_neg.get_sum() << " > " << thirteen_neg.get_sum();
 }
+TEST_F(MoreFixture, more_neg_logical2){
+    ASSERT_TRUE(thirteen_neg > fifteen_neg)
+        << "Incorrect negative logical " << fifteen_neg.get_sum() << " > " << thirteen_neg.get_sum();
+}
+
 
 class LessFixture : public testing::Test {
 public:
@@ -112,9 +117,13 @@ TEST_F(LessFixture, different_numbers_with_equal_length){
     ASSERT_TRUE(one_hundred_two < one_hundred_three)
         << "An One hundred two more then an one hundred three " << one_hundred_three.get_sum() << " < " << one_hundred_two.get_sum();
 }
-TEST_F(LessFixture, less_neg_logical){
+TEST_F(LessFixture, less_neg_logical1){
     ASSERT_TRUE(fifteen_neg < thirteen_neg)
     << "Incorrect negative logical " << thirteen_neg.get_sum() << " < " << fifteen_neg.get_sum();
+}
+TEST_F(LessFixture, less_neg_logical2){
+    ASSERT_FALSE(thirteen_neg < fifteen_neg)
+        << "Incorrect negative logical " << thirteen_neg.get_sum() << " < " << fifteen_neg.get_sum();
 }
 class SumFixture : public testing::Test {
     public:
@@ -122,6 +131,8 @@ class SumFixture : public testing::Test {
         IBusko::LongNumber two = IBusko::LongNumber("2");
         IBusko::LongNumber nine = IBusko::LongNumber("9");
         IBusko::LongNumber thirteen = IBusko::LongNumber("13");
+        IBusko::LongNumber thirteen_neg = IBusko::LongNumber("-13");
+        IBusko::LongNumber twenty_seven = IBusko::LongNumber("27");
         IBusko::LongNumber ninety_nine_pos = IBusko::LongNumber("99");
         IBusko::LongNumber ninety_nine_neg = IBusko::LongNumber("-99");
         IBusko::LongNumber one_hundred_eight = IBusko::LongNumber("108");
@@ -142,7 +153,7 @@ TEST_F(SumFixture, negative_plus_positive){
     ASSERT_EQ(0, a.get_sum())
         << "It's not 0";
 }
-TEST_F(SumFixture, associated){
+TEST_F(SumFixture, associated1){
     IBusko::LongNumber a = thirteen + nine;
     ASSERT_EQ(22, a.get_sum())
         << "It's not 22";
@@ -150,7 +161,17 @@ TEST_F(SumFixture, associated){
 TEST_F(SumFixture, sum_of_nums_with_different_capacity){
     IBusko::LongNumber a = ninety_nine_neg + one_hundred_eight;
     ASSERT_EQ(9, a.get_sum())
-    << "It's not 9";
+        << "It's not 9";
+}
+TEST_F(SumFixture, sum_with_bugs){
+    IBusko::LongNumber a = twenty_seven + thirteen_neg;
+    ASSERT_EQ(14, a.get_sum())
+        << "It's not 14";
+}
+TEST_F(SumFixture, associated2){
+    IBusko::LongNumber a = thirteen_neg + twenty_seven;
+    ASSERT_EQ(14, a.get_sum())
+        << "It's not 14";
 }
 
 class DifferenceFixture : public testing::Test{
@@ -159,13 +180,20 @@ class DifferenceFixture : public testing::Test{
         IBusko::LongNumber two = IBusko::LongNumber("2");
         IBusko::LongNumber nine = IBusko::LongNumber("9");
         IBusko::LongNumber thirteen = IBusko::LongNumber("13");
+        IBusko::LongNumber thirteen_neg = IBusko::LongNumber("-13");
+        IBusko::LongNumber twenty_seven = IBusko::LongNumber("27");
         IBusko::LongNumber ninety_nine_pos = IBusko::LongNumber("99");
         IBusko::LongNumber ninety_nine_neg = IBusko::LongNumber("-99");
         IBusko::LongNumber one_hundred_eight = IBusko::LongNumber("108");
 };
 
-TEST_F(DifferenceFixture, simple_diff){
+TEST_F(DifferenceFixture, simple_diff1){
     IBusko::LongNumber a = one - two;
+    ASSERT_EQ(-1, a.get_sum())
+        << "It's not minus one";
+}
+TEST_F(DifferenceFixture, simple_diff2){
+    IBusko::LongNumber a = two - one;
     ASSERT_EQ(1, a.get_sum())
         << "It's not one";
 }
@@ -189,38 +217,14 @@ TEST_F(DifferenceFixture, sum_of_nums_with_different_capacity){
     ASSERT_EQ(9, a.get_sum())
         << "It's not 9";
 }
+TEST_F(DifferenceFixture, equal_numbers1){
+    IBusko::LongNumber a = one_hundred_eight - one_hundred_eight;
+    ASSERT_EQ(0, a.get_sum())
+        << "It's not 0";
+}
 
 
 int main(int argc, char **argv) {
-    IBusko::LongNumber x("-100");
-    IBusko::LongNumber y("13");
-    IBusko::LongNumber x1("-100");
-    IBusko::LongNumber y1("13");
-
-    IBusko::LongNumber z1 = x1 + y;
-    IBusko::LongNumber z2 = y + x1;
-//
-//    IBusko::LongNumber z3 = x1 + y1;
-//    IBusko::LongNumber z4 = y1 + x1;
-
-//    std::cout << (x > y) << "\n";
-//    std::cout << (y > y1) << "\n";
-
-//    std::cout << "\n";
-
-//    std::cout << (y > x) << "\n";
-//    std::cout << (y1 < x1) << "\n";
-
-    std::cout << z1.get_sign() << "\n";
-    std::cout << z1.get_sum() << "\n";
-
-    std::cout << "\n";
-
-    std::cout << z2.get_sign() << "\n";
-    std::cout << z2.get_sum() << "\n";
-
-//	::testing::InitGoogleTest(&argc, argv);
-//	return RUN_ALL_TESTS();
-
-    return 0;
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }

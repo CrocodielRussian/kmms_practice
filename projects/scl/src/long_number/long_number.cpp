@@ -27,7 +27,6 @@ namespace IBusko {
         write_number(str, numbers, length, index);
 
 		this->sum = sum_of_arr(numbers, length, sign);
-//		std::cout << "create1 " << this << "\n";
 	}
 	
 	LongNumber::LongNumber(const LongNumber& x) {
@@ -39,9 +38,6 @@ namespace IBusko {
         for(int i = 0; i < length; i++){
             numbers[i] = x.numbers[i];
         }
-
-//        std::cout << "create2 " << this << "\n";
-
 	}
 	
 	LongNumber::LongNumber(LongNumber&& x) {
@@ -59,11 +55,9 @@ namespace IBusko {
         x.sum = 0;
         x.sign = 0;
 
-//        std::cout << "create3 " << this << "\n";
 	}
 	
 	LongNumber::~LongNumber() {
-//		std::cout << "delete " << this << "\n";
 		delete[] numbers;
 	}
 	
@@ -93,7 +87,7 @@ namespace IBusko {
         write_number(str, numbers, length, index);
 
         this->sum = sum_of_arr(numbers, length, sign);
-//        std::cout << "operator 1" << "\n";
+
 		return *this;
 	}
 
@@ -110,8 +104,6 @@ namespace IBusko {
         for(int i = 0; i < length; i++){
             numbers[i] = x.numbers[i];
         }
-//        std::cout << "operator 2" << "\n";
-
 		return *this;
 	}
 
@@ -131,7 +123,6 @@ namespace IBusko {
         x.sum = 0;
         x.sign = 0;
 
-//        std::cout << "operator 3" << "\n";
 		return *this;
 	}
 	
@@ -175,12 +166,15 @@ namespace IBusko {
                             return true;
                         else
                             return false;
-
+                    }else if(this->numbers[i] < x.numbers[i]){
+                        if(this->get_sign() == 1)
+                            return false;
+                        else
+                            return true;
                     }
                 }
             }
         }
-
 		return false;
 	}
 
@@ -208,6 +202,11 @@ namespace IBusko {
                         }else{
                             return false;
                         }
+                    }else if(this->numbers[i] > x.numbers[i]){
+                        if(this->get_sign() == 1)
+                            return false;
+                        else
+                            return true;
                     }
                 }
             }
@@ -223,27 +222,17 @@ namespace IBusko {
         for(int i = 0; i < result.get_digits_number(); i++){
             result.numbers[i] = 0;
         }
-
         if(this->get_sign() == x.get_sign()){
             result.sign = x.get_sign();
             addition_of_num(numbers, size, result, x);
         }else{
-            if(*this > x){
-                result.sign = this->get_sign();
+            if(this->more_compare_by_module(x)){
+                result.sign = this->sign;
             }else{
-                result.sign = x.get_sign();
+                result.sign = x.sign;
             }
             subtraction_of_num(numbers, size, result, x);
         }
-        //std::cout << "first" << "\n";
-
-//        for(int i = 0; i < size; i++){
-//            std::cout << result.numbers[i] << " ";
-//        }
-//        std::cout << "\n";
-
-        //std::cout << "second" << "\n";
-
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 		return result;
 	}
@@ -257,24 +246,17 @@ namespace IBusko {
             result.numbers[i] = 0;
         }
 
-        if(this->get_sign() == 1 && x.get_sign() == -1){
+        if(this->get_sign() == POSITIVE && x.get_sign() == NEGATIVE || this->get_sign() == NEGATIVE && x.get_sign() == POSITIVE){
             result.sign = this->get_sign();
             addition_of_num(numbers, size, result, x);
         }else{
-            if(*this > x){
+            if(this->more_compare_by_module(x)){
                 result.sign = this->get_sign();
             }else{
                 result.sign = x.get_sign();
             }
             subtraction_of_num(numbers, size, result, x);
         }
-        //std::cout << "first" << "\n";
-//        for(int i = 0; i < size; i++){
-//            std::cout << result.numbers[i] << " ";
-//        }
-//        std::cout << "\n";
-        //std::cout << "second" << "\n";
-
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
         return result;
 	}
@@ -296,7 +278,7 @@ namespace IBusko {
 		LongNumber result;
 		return result;
 	}
-	
+
 	int LongNumber::get_digits_number() const {
 		return length;
 	}
@@ -306,22 +288,28 @@ namespace IBusko {
     int LongNumber::get_sign() const {
         return sign;
     }
+    bool LongNumber::more_compare_by_module(const LongNumber& x) {
+        if(this->get_digits_number() > x.get_digits_number()){
+            return true;
+        }else if(this->get_digits_number() < x.get_digits_number()){
+            return false;
+        }else{
+            for(int i = length-1; i >= 0; i--){
+                if(this->numbers[i] > x.numbers[i]) {
+                    return true;
+                }else if(this->numbers[i] < x.numbers[i]){
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
 	bool LongNumber::is_positive() const {
 		return sign == POSITIVE;
 	}
-	
 	// ----------------------------------------------------------
 	// PRIVATE
 	// ----------------------------------------------------------
-
-	int LongNumber::get_length(const char* const str) const {
-        int length = 0;
-        while (str[length] != END)
-        {
-            length++;
-        }
-        return length;
-	}
     void LongNumber::addition_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x) {
         short sum;
         for(int i = 0; i < size - 1; i++){
@@ -335,22 +323,38 @@ namespace IBusko {
                 result.numbers[i+1]++;
         }
     }
-    void LongNumber::subtraction_of_num(int *numbers, int size, LongNumber& result, const LongNumber& x) {
-        short diff;
-
-        for(int i = size - 2; i >= 0; i--){
-            diff = 0;
-            if(x.length > i)
-                diff += x.numbers[i];
-            if(length > i)
-                diff -= numbers[i];
-            //std::cout << diff << "\n";
-            result.numbers[i] += abs(diff % 10);
-            if(abs(diff) > 9)
-                result.numbers[i+1]--;
-            //std::cout << result.numbers[i] << " ";
+	int LongNumber::get_length(const char* const str) const {
+        int length = 0;
+        while (str[length] != END) {
+            length++;
         }
-        std::cout << "\n";
+        return length;
+    }
+    void LongNumber::subtraction_of_num(int *numbers, int size, LongNumber& result, const LongNumber& x) {
+        short diff, index_1, index_2;
+        if(this->sign == NEGATIVE){
+            index_1 = 1;
+            index_2 = -1;
+        }else{
+            index_1 = -1;
+            index_2 = 1;
+        }
+        for(int i = size - 2; i >= 0; i--) {
+            diff = 0;
+            if (x.length > i) {
+               // std::cout << x.numbers[i] << " ";
+                diff = diff + index_1 * x.numbers[i];
+            }
+            if (length > i) {
+                diff = diff + index_2 * numbers[i];
+            }
+            if (diff < 0) {
+                result.numbers[i] = 10 - abs(diff);
+                result.numbers[i + 1]--;
+            } else {
+                result.numbers[i] = abs(diff);
+            }
+        }
     }
 	
 	int LongNumber::sum_of_arr(int* numbers, int size, int sign) const {
