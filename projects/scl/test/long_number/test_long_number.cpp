@@ -23,15 +23,6 @@ TEST(get_numbers, check_sum2) {
     ASSERT_EQ(-12345, x.get_sum())
     << "Trouble with write negative num " << x.get_sum();
 }
-//TEST(check_operator, first){
-//
-//}
-//TEST(check_operator, second){
-//
-//}
-//TEST(check_operator, third){
-//
-//}
 class EqualityFixture : public testing::Test {
 	public:
 		IBusko::LongNumber one_v1 = IBusko::LongNumber("1");
@@ -178,7 +169,9 @@ class DifferenceFixture : public testing::Test{
     public:
         IBusko::LongNumber one = IBusko::LongNumber("1");
         IBusko::LongNumber two = IBusko::LongNumber("2");
+        IBusko::LongNumber three = IBusko::LongNumber("3");
         IBusko::LongNumber nine = IBusko::LongNumber("9");
+        IBusko::LongNumber twelve = IBusko::LongNumber("12");
         IBusko::LongNumber thirteen = IBusko::LongNumber("13");
         IBusko::LongNumber thirteen_neg = IBusko::LongNumber("-13");
         IBusko::LongNumber twenty_seven = IBusko::LongNumber("27");
@@ -196,6 +189,16 @@ TEST_F(DifferenceFixture, simple_diff2){
     IBusko::LongNumber a = two - one;
     ASSERT_EQ(1, a.get_sum())
         << "It's not one";
+}
+TEST_F(DifferenceFixture, simple_diff3){
+    IBusko::LongNumber a = twelve - two;
+    ASSERT_EQ(10, a.get_sum())
+        << "It's not ten";
+}
+TEST_F(DifferenceFixture, simple_diff4){
+    IBusko::LongNumber a = thirteen - two;
+    ASSERT_EQ(11, a.get_sum())
+        << "It's not eleven";
 }
 TEST_F(DifferenceFixture, last_capacity){
     IBusko::LongNumber a = thirteen - nine;
@@ -223,8 +226,135 @@ TEST_F(DifferenceFixture, equal_numbers1){
         << "It's not 0";
 }
 
+class MultiplicationFixture : public testing::Test{
+public:
+    IBusko::LongNumber zero = IBusko::LongNumber("0");
+    IBusko::LongNumber one = IBusko::LongNumber("1");
+    IBusko::LongNumber two = IBusko::LongNumber("2");
+    IBusko::LongNumber nine = IBusko::LongNumber("9");
+    IBusko::LongNumber thirteen = IBusko::LongNumber("13");
+    IBusko::LongNumber thirteen_neg = IBusko::LongNumber("-13");
+    IBusko::LongNumber twenty_seven = IBusko::LongNumber("27");
+    IBusko::LongNumber ninety_nine_pos = IBusko::LongNumber("99");
+    IBusko::LongNumber ninety_nine_neg = IBusko::LongNumber("-99");
+    IBusko::LongNumber one_hundred_eight = IBusko::LongNumber("108");
+};
+
+TEST_F(MultiplicationFixture, simple_multiplication1){
+    IBusko::LongNumber a = one * two;
+    ASSERT_EQ(2, a.get_sum())
+        << "It's not 2";
+}
+TEST_F(MultiplicationFixture, simple_multiplication2){
+    IBusko::LongNumber a = two * one;
+    ASSERT_EQ(2, a.get_sum())
+        << "It's not 2";
+}
+TEST_F(MultiplicationFixture, multiplicate_with_zero1){
+    IBusko::LongNumber a = zero * twenty_seven;
+    ASSERT_EQ(0, a.get_sum())
+        << "It's not 0";
+}
+TEST_F(MultiplicationFixture, multiplicate_with_zero2){
+    IBusko::LongNumber a = twenty_seven * zero;
+    ASSERT_EQ(0, a.get_sum())
+        << "It's not 0";
+}
+TEST_F(MultiplicationFixture, multiplicate_two_neg_num1){
+    IBusko::LongNumber a = thirteen_neg * ninety_nine_neg;
+    ASSERT_EQ(1287, a.get_sum())
+        << "It's not 1287";
+}
+TEST_F(MultiplicationFixture, multiplicate_two_neg_num2){
+    IBusko::LongNumber a = ninety_nine_neg * thirteen_neg;
+    ASSERT_EQ(1287, a.get_sum())
+        << "It's not 1287";
+}
+TEST_F(MultiplicationFixture, simple_multiplication3){
+    IBusko::LongNumber a = nine * two;
+    ASSERT_EQ(18, a.get_sum())
+        << "It's not 18";
+}
+TEST_F(MultiplicationFixture, multiplicate_two_neg_num3){
+    IBusko::LongNumber a = thirteen_neg * two;
+    ASSERT_EQ(-26, a.get_sum())
+        << "It's not -26";
+}
+
+class DivisionFixture : public testing::Test{
+    public:
+        IBusko::LongNumber zero = IBusko::LongNumber("0");
+        IBusko::LongNumber one = IBusko::LongNumber("1");
+        IBusko::LongNumber two = IBusko::LongNumber("2");
+        IBusko::LongNumber nine = IBusko::LongNumber("9");
+        IBusko::LongNumber thirteen1 = IBusko::LongNumber("13");
+        IBusko::LongNumber thirteen2 = IBusko::LongNumber("13");
+        IBusko::LongNumber thirteen_neg = IBusko::LongNumber("-13");
+        IBusko::LongNumber twenty_seven = IBusko::LongNumber("27");
+        IBusko::LongNumber ninety_nine_pos = IBusko::LongNumber("99");
+        IBusko::LongNumber ninety_nine_neg = IBusko::LongNumber("-99");
+        IBusko::LongNumber one_hundred_eight = IBusko::LongNumber("108");
+
+};
+
+TEST_F(DivisionFixture, simple_division1){
+    IBusko::LongNumber a = one_hundred_eight / two;
+    ASSERT_EQ(54, a.get_sum())
+        << "It's not 54";
+}
+TEST_F(DivisionFixture, division_of_equal_num1){
+    IBusko::LongNumber a = thirteen1 / thirteen2;
+    ASSERT_EQ(1, a.get_sum())
+        << "It's not 1";
+}
+TEST_F(DivisionFixture, division_with_diff_sign1){
+    IBusko::LongNumber a = thirteen1 / thirteen_neg;
+    ASSERT_EQ(-1, a.get_sum())
+        << "It's not -1";
+}
+TEST_F(DivisionFixture, division_with_diff_sign2){
+    IBusko::LongNumber a = thirteen_neg / thirteen1;
+    ASSERT_EQ(-1, a.get_sum())
+        << "It's not -1";
+}
+TEST_F(DivisionFixture, division_by_zero1){
+    IBusko::LongNumber a = thirteen_neg / zero;
+    ASSERT_EQ(0, a.get_sum())
+        << "It's impossible";
+}
+TEST_F(DivisionFixture, division_by_zero2){
+    IBusko::LongNumber a = zero / thirteen_neg;
+    ASSERT_EQ(0, a.get_sum())
+        << "It isn't null";
+}
 
 int main(int argc, char **argv) {
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+//    IBusko::LongNumber a1 = IBusko::LongNumber("100");
+    IBusko::LongNumber b1 = IBusko::LongNumber("12");
+    IBusko::LongNumber b2 = IBusko::LongNumber("2");
+    IBusko::LongNumber a = IBusko::LongNumber("144");
+    IBusko::LongNumber b = IBusko::LongNumber("12");
+//    IBusko::LongNumber d = IBusko::LongNumber("-1");
+//    IBusko::LongNumber one = IBusko::LongNumber("1");
+    IBusko::LongNumber e = IBusko::LongNumber("777");
+//    IBusko::LongNumber zero = IBusko::LongNumber("0");
+
+    IBusko::LongNumber c = a / b;
+
+    std::cout << c << "\n";
+    std::cout << c.get_sum() << "\n";
+    std::cout << c.get_sign() << "\n";
+
+//    std::cout << b1 - b2 << "\n";
+//    std::cout << (b1 - e) << "\n";
+
+//    std::cout << a1 - b1 << "\n";
+//    std::cout << c << "\n";
+//    std::cout << d * e << "\n";
+//    std::cout << c.get_sign() << "\n";
+//    std::cout << c.get_sum() << "\n";
+
+//    ::testing::InitGoogleTest(&argc, argv);
+//	return RUN_ALL_TESTS();
+
 }

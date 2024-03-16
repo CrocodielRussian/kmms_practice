@@ -13,6 +13,7 @@ namespace IBusko {
 		static const char MINUS = '-';
 		static const int NEGATIVE = -1;
 		static const int POSITIVE = 1;
+        static const int NEUTRAL = 0;
 
         int* numbers;
         int length;
@@ -38,7 +39,7 @@ namespace IBusko {
 			LongNumber operator + (const LongNumber& x);
 			LongNumber operator - (const LongNumber& x);
 			LongNumber operator * (const LongNumber& x);
-			LongNumber operator / (const LongNumber& x);
+			LongNumber operator / (LongNumber& x);
 			LongNumber operator % (const LongNumber& x);
 			
 			int get_digits_number() const;
@@ -46,14 +47,17 @@ namespace IBusko {
             int get_sign() const;
             bool more_compare_by_module(const LongNumber& x);
 			bool is_positive() const;
+            bool is_null(const LongNumber& x) const;
 
 			friend std::ostream& operator << (std::ostream &os, const LongNumber& x);
 
         private:
             void addition_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
+            void division_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
             int get_length(const char* const str) const;
             int sum_of_arr(int* numbers, int size, int sign) const;
             void subtraction_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
+
             void write_number(const char* const str, int* numbers, int size, int index);
 	};
 }
