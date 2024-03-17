@@ -41,7 +41,8 @@ namespace IBusko {
 			LongNumber operator * (const LongNumber& x);
 			LongNumber operator / (const LongNumber& x);
 			LongNumber operator % (const LongNumber& x);
-			
+
+            void different_of_digit(LongNumber& x, const LongNumber& y);
 			int get_digits_number() const;
 			int get_sum() const;
             int get_sign() const;

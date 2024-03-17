@@ -61,6 +61,7 @@ namespace IBusko {
 	}
 
 	LongNumber::~LongNumber() {
+//        std::cout << "delete: " << this << "\n";
 		delete[] numbers;
 	}
 
@@ -95,6 +96,7 @@ namespace IBusko {
 	}
 
 	LongNumber& LongNumber::operator = (const LongNumber& x) {
+        std::cout << "copy " << this << " " << &x << "\n";
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -102,7 +104,7 @@ namespace IBusko {
         if(this->numbers != nullptr){
             delete[] this->numbers;
         }
-        this->numbers = new int[length];
+        this->numbers = new int[this->get_digits_number()];
 
         for(int i = 0; i < length; i++){
             numbers[i] = x.numbers[i];
@@ -111,6 +113,7 @@ namespace IBusko {
 	}
 
 	LongNumber& LongNumber::operator=(LongNumber &&x){
+//        std::cout << "move_copy_&&x " << this << " " << &x  << "\n";
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -346,9 +349,9 @@ namespace IBusko {
 
 
 	LongNumber LongNumber::operator / (const LongNumber& x) {
-        LongNumber result, right;
+        LongNumber result;
         LongNumber zero("0");
-        LongNumber temp1;
+        LongNumber temp1, temp_this;;
 
         int mx = std::max(this->get_digits_number(), x.get_digits_number());
         int mn = std::min(this->get_digits_number(), x.get_digits_number());
@@ -360,10 +363,15 @@ namespace IBusko {
         }
         int l = 0 , r = 10, ans = 0, mid = 1;
         temp1 = x;
+        temp_this = *this;
         int count = 0;
         for(int j = mx - 1; j >= mn - 1; j--) {
-            LongNumber temp2 = left_shift(*this, j, j - mn + 1);
+            std::cout << "this: "<< this << " " << *this << "\n";
+//            std::cout << "temp_this: "<< &temp_this << "\n";
+            LongNumber temp2 = left_shift(temp_this, j, j - mn + 1);
             l = 0, r = 10, mid = 0, ans = 0;
+//            std::cout << "before_this: " << this << " " << *this << "\n";
+            std::cout << "temp2: " << temp2 << "\n";
             while(l <= r) {
                 mid = (l + r) / 2;
                 LongNumber k = convert_int_to_big_integer(mid);
@@ -376,6 +384,13 @@ namespace IBusko {
                     r = mid - 1;
                 }
             }
+            std::cout << "ans: " << ans << "\n";
+//            std::cout << "after_this: " << this << " " << *this << "\n";
+            LongNumber k = convert_int_to_big_integer(ans);
+            LongNumber divider = temp1 * k;
+            std::cout << "divider: " << divider << "\n";
+            //different_of_digit(temp_this, divider);
+//                std::cout << "diff: " << temp2 - temp1 * k << "\n";
             std::cout << ans << "\n";
             result.numbers[j] = ans;
         }
@@ -389,6 +404,16 @@ namespace IBusko {
 		return result;
 	}
 
+    void LongNumber::different_of_digit(IBusko::LongNumber &x, const IBusko::LongNumber &y) {
+
+        int size_x = x.get_digits_number();
+        int size_y= y.get_digits_number();
+        for(int i = size_x - 1; i >= size_y; i--){
+            std::cout << "num: " << x.numbers[i] << " " << y.numbers[i - size_y] << "\n";
+            x.numbers[i] -= y.numbers[i - size_y];
+        }
+        std::cout << "-----------" << "\n";
+    }
 	int LongNumber::get_digits_number() const {
 		return length;
 	}
@@ -416,7 +441,7 @@ namespace IBusko {
     }
     LongNumber LongNumber::left_shift(const IBusko::LongNumber &x, int start, int end) {
         LongNumber result;
-
+        std::cout << &x << "\n";
         result.length = start - end + 1;
         result.sign = POSITIVE;
 
