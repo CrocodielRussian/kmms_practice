@@ -2,12 +2,11 @@
 
 namespace IBusko {
 	LongNumber::LongNumber() {
-        this->length = 0;
+        this->length = 1;
         this->sign = NEUTRAL;
         this->sum = 0;
-        this->numbers = new int[length];
+        this->numbers = new int[this->length];
 	}
-
 	LongNumber::LongNumber(const char* const str) {
         int index = 0;
         this->length = get_length(str);
@@ -30,7 +29,7 @@ namespace IBusko {
 
 		this->sum = sum_of_arr(numbers, length, sign);
 	}
-	
+
 	LongNumber::LongNumber(const LongNumber& x) {
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
@@ -41,7 +40,7 @@ namespace IBusko {
             numbers[i] = x.numbers[i];
         }
 	}
-	
+
 	LongNumber::LongNumber(LongNumber&& x) {
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
@@ -58,11 +57,11 @@ namespace IBusko {
         x.sign = 0;
 
 	}
-	
+
 	LongNumber::~LongNumber() {
 		delete[] numbers;
 	}
-	
+
 	LongNumber& LongNumber::operator = (const char* const str) {
         int index = 0;
         this->length = get_length(str);
@@ -109,7 +108,7 @@ namespace IBusko {
 		return *this;
 	}
 
-	LongNumber& LongNumber::operator = (LongNumber&& x) {
+	LongNumber& LongNumber::operator=(LongNumber &&x){
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -127,7 +126,7 @@ namespace IBusko {
 
 		return *this;
 	}
-	
+
 	bool LongNumber::operator == (const LongNumber& x) {
         if(this->get_sign() == NEUTRAL && x.get_sign() == NEUTRAL && this->numbers[0] == 0 && x.numbers[0] == 0){
             return true;
@@ -147,7 +146,7 @@ namespace IBusko {
 
 		return true;
 	}
-	
+
 	bool LongNumber::operator > (const LongNumber& x) {
         if(this->get_sign() == NEUTRAL && x.get_sign() == NEUTRAL && this->numbers[0] == 0 && x.numbers[0] == 0){
             return false;
@@ -214,17 +213,18 @@ namespace IBusko {
                             return false;
                         }
                     }else if(this->numbers[i] > x.numbers[i]){
-                        if(this->get_sign() == 1)
+                        if(this->get_sign() == 1){
                             return false;
-                        else
+                        }else{
                             return true;
+                        }
                     }
                 }
             }
         }
         return false;
 	}
-	
+
 	LongNumber LongNumber::operator + (const LongNumber& x) {
         LongNumber result;
 
@@ -255,9 +255,11 @@ namespace IBusko {
         }
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 
+        result = leading_of_zeroes(result);
+
         return result;
 	}
-	
+
 	LongNumber LongNumber::operator - (const LongNumber& x) {
         LongNumber result;
 
@@ -290,11 +292,13 @@ namespace IBusko {
 
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 
+        result = leading_of_zeroes(result);
+
         return result;
 	}
 
 	LongNumber LongNumber::operator * (const LongNumber& x) {
-		LongNumber result;
+        LongNumber result;
         LongNumber zero("0");
 
         int size = x.get_digits_number() + this->get_digits_number() + 1;
@@ -311,13 +315,12 @@ namespace IBusko {
         mn = std::min(this->get_digits_number(), x.get_digits_number());
 
         int mul = 1, idx = 0;
-
         for(int i = 0; i < mn; i++){
             for(int j = 0; j < mx; j++){
                 mul = 1;
-                if(this->get_digits_number() == mn && x.get_digits_number() == mx)
+                if(this->get_digits_number() == mn)
                     mul = this->numbers[i] * x.numbers[j];
-                if(this->get_digits_number() == mx && x.get_digits_number() == mn)
+                if(this->get_digits_number() == mx)
                     mul = this->numbers[j] * x.numbers[i];
 
                 result.numbers[j + idx] += mul;
@@ -326,11 +329,6 @@ namespace IBusko {
             }
             idx++;
         }
-
-//        for(int i = 0; i < result.get_digits_number(); i++){
-//            std::cout << result.numbers[i];
-//        }
-//        std::cout << "\n";
         if(is_null(result)){
             result.sign = NEUTRAL;
         }else if(this->get_sign() == x.get_sign()){
@@ -338,70 +336,57 @@ namespace IBusko {
         }else{
             result.sign = NEGATIVE;
         }
-
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
+        result = leading_of_zeroes(result);
 
 		return result;
 	}
 
-	LongNumber LongNumber::operator / (LongNumber& x) {
-        LongNumber result;
-        int temp;
-        LongNumber two("2");
-        LongNumber one("1");
+
+	LongNumber LongNumber::operator / (const LongNumber& x) {
+        LongNumber result, right;
         LongNumber zero("0");
-//
+        LongNumber temp1, temp2;
+
         int mx = std::max(this->get_digits_number(), x.get_digits_number());
         int mn = std::min(this->get_digits_number(), x.get_digits_number());
-//
+
         result.length = mx;
 
-        for(int i = this->get_digits_number() - 1; i >= 0; i--){
-            std::cout << this->numbers[i];
+        if(!more_compare_by_module(x)){
+            return zero;
         }
-        std::cout << "\n";
-        for(int i = x.get_digits_number() - 1; i >= 0; i--){
-            std::cout << x.numbers[i];
-        }
-        std::cout << "\n";
-
-        int carry = 0, cur = 0;
-        for(int j = mn - 1; j >= 0; j--){
-            carry = 0;
-            for(int i = mx - 1; i >= 0; i--){
-                if(this->get_digits_number() == mx){
-                    cur = this->numbers[i] + carry * 10;
-                    this->numbers[i] = cur / x.numbers[j];
-                    carry = cur % x.numbers[j];
-                }else{
-                    cur = x.numbers[i] + carry * 10;
-                    x.numbers[i] = cur / this->numbers[j];
-                    carry = cur % this->numbers[j];
-                }
-            }
-        }
-        std::cout << "end" << "\n";
-        for(int i = mx - 1; i >= 0; i--){
-            std::cout << this->numbers[i];
-        }
-        std::cout << "\n";
-//        std::cout << this->get_sign() << "\n";
-//        std::cout << this->get_sum() << "\n";
-//        if(*this < x){
-//            result = zero;
-//            return result;
-//        }else{
-//            temp = *this;
-//            std::cout << temp << "\n";
-//            while(temp > two){
-//                std::cout << temp << " " << x << "\n";
-//                temp = temp - x;
-//                result = result + one;
+        int l = 0 , r = 10, ans = 0, mid = 1;
+        temp1 = x;
+        for(int j = mx - 1; j >= mn - 1; j--) {
+//            std::cout << "more: " << mx - 1 << " " << mn - 1 << "\n";
+//            std::cout << "for: " << j << " " << j - mn + 1 << "\n";
+            temp2 = left_shift(*this, j, j - mn + 1);
+            std::cout << "temp2: "<< temp2 << "\n";
+//            LongNumber k = convert_int_to_big_integer(mid);
+//            std::cout << k << "\n";
+//            LongNumber t = temp1 * k;
+//            std::cout << "t: "<< t << "\n";
+            l = 0, r = 10, mid = 0, ans = 0;
+//            while(l <= r) {
+//                mid = (l + r) / 2;
+//                LongNumber k = convert_int_to_big_integer(mid);
+//                LongNumber t = temp1 * k;
+//                std::cout << "t: "<< t << "\n";
+//                if ((t < temp2) || (t == temp2)) {
+//                    ans = mid;
+//                    l = mid + 1;
+//                }else{
+//                    r = mid - 1;
+//                }
 //            }
-//            return  result;
-//        }
-//        std::cout << result << "\n";
-//        division_of_num(numbers, this->get_digits_number(), result, x);
+////            std::cout << "temp2: " << temp2 << "\n";
+            result.numbers[j] = ans;
+            std::cout << ans << " :end" << "\n";
+            mid++;
+        }
+
+        std::cout << "++end" << "\n";
         return result;
 	}
 
@@ -436,6 +421,31 @@ namespace IBusko {
         }
         return false;
     }
+    LongNumber LongNumber::left_shift(const IBusko::LongNumber &x, int start, int end) {
+        LongNumber result;
+        std::cout << result.get_sign() << "\n";
+        std::cout << result.get_digits_number() << "\n";
+        std::cout << result.get_sum() << "\n";
+//        result.length = start - end + 1;
+//        result.sign = POSITIVE;
+//
+//        for(int i = 0; i < result.length; i++){
+//            result.numbers[i] = 0;
+//        }
+//        std::cout << "second\n";
+//        for(int i = 0; i < result.length; i++){
+//            std::cout << result.numbers[i];
+//        }
+//        std::cout << "\n";
+//        for(int i = end; i <= start; i++){
+//            std::cout << "in_for: " << i - end << " " << i << "\n";
+//            result.numbers[i - end] = x.numbers[i];
+//        }
+//        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
+
+        return x;
+    }
+
 	bool LongNumber::is_positive() const {
 		return sign == POSITIVE;
 	}
@@ -443,8 +453,8 @@ namespace IBusko {
         if(x.get_digits_number() == 1)
             return x.numbers[0] == 0;
         if(x.get_digits_number() == 2)
-            return x.numbers[0] == 0 && x.numbers[1] == 0;
-        return (x.numbers[0] == 0 && x.numbers[1] == 0 && x.numbers[2] == 0 && x.numbers[x.get_digits_number() - 1] == 0 && x.numbers[x.get_digits_number() - 2] == 0 && x.numbers[x.get_digits_number() - 3] == 0);
+            return (x.numbers[0] == 0 && x.numbers[1] == 0);
+        return (x.numbers[0] == 0 && x.numbers[1] == 0 && x.numbers[2] == 0 && x.numbers[x.get_digits_number() - 1] == 0 && x.numbers[x.get_digits_number() - 2] == 0);
     }
 	// ----------------------------------------------------------
 	// PRIVATE
@@ -462,7 +472,16 @@ namespace IBusko {
                 result.numbers[i+1]++;
         }
     }
-    void LongNumber::division_of_num(int *numbers, int size, IBusko::LongNumber &result, const IBusko::LongNumber &x) {
+
+    LongNumber LongNumber::convert_int_to_big_integer(int num) {
+        LongNumber result;
+
+        result.length = 1;
+        result.sign = POSITIVE;
+        result.sum = num;
+        result.numbers[0] = num;
+
+        return result;
     }
 	int LongNumber::get_length(const char* const str) const {
         int length = 0;
@@ -496,7 +515,7 @@ namespace IBusko {
             }
         }
     }
-	
+
 	int LongNumber::sum_of_arr(int* numbers, int size, int sign) const {
 		int s = 0;
         if(sign == NEUTRAL)
@@ -507,6 +526,37 @@ namespace IBusko {
         s *= sign;
 		return s;
 	}
+    LongNumber LongNumber::leading_of_zeroes(IBusko::LongNumber &x) {
+//        std::cout << "start" << "\n";
+        LongNumber result;
+        result.sign = x.get_sign();
+        result.sum = x.get_sum();
+        if(x.get_sum() == 0){
+            result.sign = NEUTRAL;
+            result.length = 1;
+            result.numbers[0] = 0;
+            return result;
+        }
+        int length_of_tail = 0;
+
+//        for(int i = x.get_digits_number() - 1; i >= 0; i--){
+//            if(x.numbers[i] != 0){
+//                result.length = x.get_digits_number() - length_of_tail;
+//                break;
+//            }
+//            length_of_tail++;
+//        }
+////        std::cout << "len: " << length_of_tail << "\n";
+//        for(int i = x.get_digits_number() - length_of_tail - 1; i >= 0; i--){
+//            std::cout << x.numbers[i];
+//            result.numbers[i] = x.numbers[i];
+//        }
+//
+//        std::cout << "\n";
+//        result = x;
+//        std::cout << "finish" << "\n";
+        return x;
+    }
     void LongNumber::write_number(const char *const str, int *numbers, int size, int index) {
         if(is_positive()){
             for(int i = index; i < length+index; i++){
@@ -523,14 +573,9 @@ namespace IBusko {
 	// FRIENDLY
 	// ----------------------------------------------------------
 	std::ostream& operator << (std::ostream &os, const LongNumber& x) {
-        bool null_capacity = true;
 		for(int i = x.get_digits_number() - 1; i >= 0; i--){
-            if(x.numbers[i] != 0 && null_capacity)
-                null_capacity = false;
-            if(!(null_capacity))
-                os << x.numbers[i];
+            os << x.numbers[i];
         }
-
         os << std::ends;
 		return os;
 	}
