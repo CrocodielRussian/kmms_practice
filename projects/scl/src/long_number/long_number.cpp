@@ -36,8 +36,10 @@ namespace IBusko {
         this->sum = x.get_sum();
         this->numbers = new int[length];
 
-        for(int i = 0; i < length; i++){
-            numbers[i] = x.numbers[i];
+        if(x.numbers != nullptr){
+            for(int i = 0; i < length; i++){
+                this->numbers[i] = x.numbers[i];
+            }
         }
 	}
 
@@ -346,7 +348,7 @@ namespace IBusko {
 	LongNumber LongNumber::operator / (const LongNumber& x) {
         LongNumber result, right;
         LongNumber zero("0");
-        LongNumber temp1, temp2;
+        LongNumber temp1;
 
         int mx = std::max(this->get_digits_number(), x.get_digits_number());
         int mn = std::min(this->get_digits_number(), x.get_digits_number());
@@ -358,34 +360,25 @@ namespace IBusko {
         }
         int l = 0 , r = 10, ans = 0, mid = 1;
         temp1 = x;
+        int count = 0;
         for(int j = mx - 1; j >= mn - 1; j--) {
-//            std::cout << "more: " << mx - 1 << " " << mn - 1 << "\n";
-//            std::cout << "for: " << j << " " << j - mn + 1 << "\n";
-            temp2 = left_shift(*this, j, j - mn + 1);
-            std::cout << "temp2: "<< temp2 << "\n";
-//            LongNumber k = convert_int_to_big_integer(mid);
-//            std::cout << k << "\n";
-//            LongNumber t = temp1 * k;
-//            std::cout << "t: "<< t << "\n";
+            LongNumber temp2 = left_shift(*this, j, j - mn + 1);
             l = 0, r = 10, mid = 0, ans = 0;
-//            while(l <= r) {
-//                mid = (l + r) / 2;
-//                LongNumber k = convert_int_to_big_integer(mid);
-//                LongNumber t = temp1 * k;
-//                std::cout << "t: "<< t << "\n";
-//                if ((t < temp2) || (t == temp2)) {
-//                    ans = mid;
-//                    l = mid + 1;
-//                }else{
-//                    r = mid - 1;
-//                }
-//            }
-////            std::cout << "temp2: " << temp2 << "\n";
-            result.numbers[j] = ans;
-            std::cout << ans << " :end" << "\n";
-            mid++;
-        }
+            while(l <= r) {
+                mid = (l + r) / 2;
+                LongNumber k = convert_int_to_big_integer(mid);
+                LongNumber t = temp1 * k;
 
+                if ((t < temp2) || (t == temp2)) {
+                    ans = mid;
+                    l = mid + 1;
+                }else{
+                    r = mid - 1;
+                }
+            }
+            std::cout << ans << "\n";
+            result.numbers[j] = ans;
+        }
         std::cout << "++end" << "\n";
         return result;
 	}
@@ -423,27 +416,19 @@ namespace IBusko {
     }
     LongNumber LongNumber::left_shift(const IBusko::LongNumber &x, int start, int end) {
         LongNumber result;
-        std::cout << result.get_sign() << "\n";
-        std::cout << result.get_digits_number() << "\n";
-        std::cout << result.get_sum() << "\n";
-//        result.length = start - end + 1;
-//        result.sign = POSITIVE;
-//
-//        for(int i = 0; i < result.length; i++){
-//            result.numbers[i] = 0;
-//        }
-//        std::cout << "second\n";
-//        for(int i = 0; i < result.length; i++){
-//            std::cout << result.numbers[i];
-//        }
-//        std::cout << "\n";
-//        for(int i = end; i <= start; i++){
-//            std::cout << "in_for: " << i - end << " " << i << "\n";
-//            result.numbers[i - end] = x.numbers[i];
-//        }
-//        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 
-        return x;
+        result.length = start - end + 1;
+        result.sign = POSITIVE;
+
+        for(int i = 0; i < result.length; i++){
+            result.numbers[i] = 0;
+        }
+        for(int i = end; i <= start; i++){
+            result.numbers[i - end] = x.numbers[i];
+        }
+        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
+
+        return result;
     }
 
 	bool LongNumber::is_positive() const {
@@ -527,7 +512,6 @@ namespace IBusko {
 		return s;
 	}
     LongNumber LongNumber::leading_of_zeroes(IBusko::LongNumber &x) {
-//        std::cout << "start" << "\n";
         LongNumber result;
         result.sign = x.get_sign();
         result.sum = x.get_sum();
@@ -539,23 +523,18 @@ namespace IBusko {
         }
         int length_of_tail = 0;
 
-//        for(int i = x.get_digits_number() - 1; i >= 0; i--){
-//            if(x.numbers[i] != 0){
-//                result.length = x.get_digits_number() - length_of_tail;
-//                break;
-//            }
-//            length_of_tail++;
-//        }
-////        std::cout << "len: " << length_of_tail << "\n";
-//        for(int i = x.get_digits_number() - length_of_tail - 1; i >= 0; i--){
-//            std::cout << x.numbers[i];
-//            result.numbers[i] = x.numbers[i];
-//        }
-//
-//        std::cout << "\n";
-//        result = x;
-//        std::cout << "finish" << "\n";
-        return x;
+        for(int i = x.get_digits_number() - 1; i >= 0; i--){
+            if(x.numbers[i] != 0){
+                result.length = x.get_digits_number() - length_of_tail;
+                break;
+            }
+            length_of_tail++;
+        }
+        for(int i = x.get_digits_number() - length_of_tail - 1; i >= 0; i--){
+            result.numbers[i] = x.numbers[i];
+        }
+
+        return result;
     }
     void LongNumber::write_number(const char *const str, int *numbers, int size, int index) {
         if(is_positive()){
