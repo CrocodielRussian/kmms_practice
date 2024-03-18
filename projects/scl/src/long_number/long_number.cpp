@@ -1,11 +1,11 @@
 #include "long_number.hpp"
 
 namespace IBusko {
-	LongNumber::LongNumber() {
+	LongNumber::LongNumber(){
         this->length = 1;
         this->sign = NEUTRAL;
         this->sum = 0;
-        this->numbers = new int[this->length];
+        this->numbers = new int[length];
 	}
 	LongNumber::LongNumber(const char* const str) {
         int index = 0;
@@ -53,7 +53,7 @@ namespace IBusko {
         for(int i = 0; i < length; i++){
             numbers[i] = x.numbers[i];
         }
-        delete[] x.numbers;
+        x.numbers = nullptr;
         x.length = 0;
         x.sum = 0;
         x.sign = 0;
@@ -62,6 +62,7 @@ namespace IBusko {
 
 	LongNumber::~LongNumber() {
 		delete[] numbers;
+        numbers = nullptr;
 	}
 
 	LongNumber& LongNumber::operator = (const char* const str) {
@@ -95,6 +96,7 @@ namespace IBusko {
 	}
 
 	LongNumber& LongNumber::operator = (const LongNumber& x) {
+        if(this == &x) return *this;
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -111,6 +113,7 @@ namespace IBusko {
 	}
 
 	LongNumber& LongNumber::operator=(LongNumber &&x){
+        if(this == &x) return *this;
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -369,12 +372,11 @@ namespace IBusko {
         }
         int l = 0 , r = 10, ans = 0, mid = 1;
         divider = x;
-        int count = 0;
+        divisible = *this;
 
+        int count = 0;
         for(int j = mx - 1; j >= mn - 1; j--) {
             temp2 = get_subnumber(divisible, divider);
-
-            temp2 = left_shift(temp_this, x.get_digits_number(), temp2);
             l = 0, r = 10, mid = 0, ans = 0;
             while(l <= r) {
                 mid = (l + r) / 2;
@@ -410,6 +412,12 @@ namespace IBusko {
         }
 
         delete[] arr_of_ans;
+
+        if(x.get_sign() == this->get_sign())
+            result.sign = POSITIVE;
+        else
+            result.sign = NEGATIVE;
+
         return result;
 	}
 
@@ -426,12 +434,12 @@ namespace IBusko {
         }
         int l = 0 , r = 10, ans = 0, mid = 1;
         divider = x;
+        divisible = *this;
         int count = 0;
 
         for(int j = mx - 1; j >= mn - 1; j--) {
             temp2 = get_subnumber(divisible, divider);
 
-            temp2 = left_shift(temp_this, x.get_digits_number(), temp2);
             l = 0, r = 10, mid = 0, ans = 0;
             while(l <= r) {
                 mid = (l + r) / 2;
@@ -510,7 +518,6 @@ namespace IBusko {
     LongNumber LongNumber::get_subnumber(const LongNumber &divisible, const LongNumber &divider) {
         LongNumber result, temp("0");
         int i1 = divisible.get_digits_number() - 1, i2 = divisible.get_digits_number() - 1;
-
         while(temp < divider){
             if(i2 < 0){
                 break;
