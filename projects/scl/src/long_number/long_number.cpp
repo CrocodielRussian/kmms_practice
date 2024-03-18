@@ -251,16 +251,16 @@ namespace IBusko {
         }else{
             if(!more_compare_by_module(x)){
                 subtraction_of_num(x, result, *this);
-                result.sign = NEGATIVE;
             }else{
                 subtraction_of_num(*this, result, x);
-                if(is_null(result)){
-                    result.sign = NEUTRAL;
-                }else if(this->more_compare_by_module(x)){
-                    result.sign = this->sign;
-                }else{
-                    result.sign = x.sign;
-                }
+            }
+
+            if(is_null(result)){
+                result.sign = NEUTRAL;
+            }else if(this->more_compare_by_module(x)){
+                result.sign = this->get_sign();
+            }else{
+                result.sign = x.get_sign();
             }
 
         }
@@ -293,16 +293,15 @@ namespace IBusko {
         }else{
             if(!more_compare_by_module(x)){
                 subtraction_of_num(x, result, *this);
-                result.sign = NEGATIVE;
             }else{
                 subtraction_of_num(*this, result, x);
-                if(is_null(result)){
-                    result.sign = NEUTRAL;
-                }else if(this->more_compare_by_module(x)){
-                    result.sign = this->get_sign();
-                }else{
-                    result.sign = x.get_sign();
-                }
+            }
+            if(is_null(result)){
+                result.sign = NEUTRAL;
+            }else if(*this > x){
+                result.sign = this->get_sign();
+            }else{
+                result.sign = NEGATIVE * x.get_sign();
             }
         }
 
