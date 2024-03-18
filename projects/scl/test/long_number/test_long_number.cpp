@@ -329,25 +329,7 @@ TEST_F(DivisionFixture, division_by_zero2){
 }
 
 int main(int argc, char **argv) {
-    IBusko::LongNumber a("108");
-    IBusko::LongNumber b("-2");
-
-    std::cout << a - b << "\n";
-    std::cout << b - a << "\n";
-
-    std::cout <<"\n";
-
-    std::cout << a + b << "\n";
-    std::cout << b + a << "\n";
-
-    std::cout <<"\n";
-
-    std::cout << a * b << "\n";
-    std::cout << b * a << "\n";
-
-    std::cout <<"\n";
-
-//    ::testing::InitGoogleTest(&argc, argv);
-//	return RUN_ALL_TESTS();
+    ::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }
 
