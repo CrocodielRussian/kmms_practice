@@ -61,7 +61,6 @@ namespace IBusko {
 	}
 
 	LongNumber::~LongNumber() {
-//        std::cout << "delete: " << this << "\n";
 		delete[] numbers;
 	}
 
@@ -96,7 +95,6 @@ namespace IBusko {
 	}
 
 	LongNumber& LongNumber::operator = (const LongNumber& x) {
-        std::cout << "copy " << this << " " << &x << "\n";
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -113,7 +111,6 @@ namespace IBusko {
 	}
 
 	LongNumber& LongNumber::operator=(LongNumber &&x){
-//        std::cout << "move_copy_&&x " << this << " " << &x  << "\n";
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -366,7 +363,7 @@ namespace IBusko {
         for(int i = 0; i < mx; i++){
             result.numbers[i] = 0;
         }
-//
+
         if(!more_compare_by_module(x)){
             return zero;
         }
@@ -464,10 +461,8 @@ namespace IBusko {
         int size_x = x.get_digits_number();
         int size_y= y.get_digits_number();
         for(int i = size_x - 1; i >= size_y; i--){
-            std::cout << "num: " << x.numbers[i] << " " << y.numbers[i - size_y] << "\n";
             x.numbers[i] -= y.numbers[i - size_y];
         }
-        std::cout << "-----------" << "\n";
     }
 	int LongNumber::get_digits_number() const {
 		return length;
@@ -523,7 +518,6 @@ namespace IBusko {
             temp = left_shift(divisible, i1, i2);
             i2--;
         }
-        std::cout << "out" << "\n";
         result = temp;
 
         return result;
@@ -533,7 +527,6 @@ namespace IBusko {
         int inx_snum = sub_number.get_digits_number() - 1;
         int count = 0;
 
-//        std::cout << size << " " << size_subnumber << " " << sub_number.get_digits_number() << " " << inx_snum << "\n" << "\t";
         for(int i = size; i >= size_subnumber - size; i--){
             std::cout << number.numbers[i];
             if(sub_number.get_digits_number() + count < size_subnumber){
@@ -544,7 +537,6 @@ namespace IBusko {
                 inx_snum--;
             }
         }
-        std::cout << "\noutput\n";
         number = leading_of_zeroes(number);
     }
 	bool LongNumber::is_positive() const {
