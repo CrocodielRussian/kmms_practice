@@ -63,7 +63,7 @@ namespace IBusko {
             void division_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
             int get_length(const char* const str) const;
             int sum_of_arr(int* numbers, int size, int sign) const;
-            void subtraction_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
+            void subtraction_of_num(const LongNumber& x, LongNumber& result, const LongNumber& y);
             void write_number(const char* const str, int* numbers, int size, int index);
 	};
 }

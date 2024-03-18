@@ -249,14 +249,20 @@ namespace IBusko {
                 result.sign = x.get_sign();
             }
         }else{
-            subtraction_of_num(this->numbers, size, result, x);
-            if(is_null(result)){
-                result.sign = NEUTRAL;
-            }else if(this->more_compare_by_module(x)){
-                result.sign = this->sign;
+            if(!more_compare_by_module(x)){
+                subtraction_of_num(x, result, *this);
+                result.sign = NEGATIVE;
             }else{
-                result.sign = x.sign;
+                subtraction_of_num(*this, result, x);
+                if(is_null(result)){
+                    result.sign = NEUTRAL;
+                }else if(this->more_compare_by_module(x)){
+                    result.sign = this->sign;
+                }else{
+                    result.sign = x.sign;
+                }
             }
+
         }
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 
@@ -285,13 +291,18 @@ namespace IBusko {
                 result.sign = this->get_sign();
             }
         }else{
-            subtraction_of_num(numbers, size, result, x);
-            if(is_null(result)){
-                result.sign = NEUTRAL;
-            }else if(this->more_compare_by_module(x)){
-                result.sign = this->get_sign();
+            if(!more_compare_by_module(x)){
+                subtraction_of_num(x, result, *this);
+                result.sign = NEGATIVE;
             }else{
-                result.sign = x.get_sign();
+                subtraction_of_num(*this, result, x);
+                if(is_null(result)){
+                    result.sign = NEUTRAL;
+                }else if(this->more_compare_by_module(x)){
+                    result.sign = this->get_sign();
+                }else{
+                    result.sign = x.get_sign();
+                }
             }
         }
 
@@ -590,27 +601,28 @@ namespace IBusko {
         }
         return length;
     }
-    void LongNumber::subtraction_of_num(int *numbers, int size, LongNumber& result, const LongNumber& x) {
+    void LongNumber::subtraction_of_num(const LongNumber& x, LongNumber& result, const LongNumber& y) {
         short diff, index_1, index_2;
-        if(this->sign == NEGATIVE){
+        if(x.get_sign() == NEGATIVE){
             index_1 = 1;
             index_2 = -1;
         }else{
             index_1 = -1;
             index_2 = 1;
         }
-        for(int i = size - 2; i >= 0; i--) {
+        for(int i = x.get_digits_number() - 1; i >= 0; i--) {
             diff = 0;
-            if (x.length > i) {
-                diff = diff + index_1 * x.numbers[i];
+
+            if (y.length > i) {
+                diff = diff + index_1 * y.numbers[i];
             }
-            if (length > i) {
-                diff = diff + index_2 * numbers[i];
+            if (x.get_digits_number() > i) {
+                diff = diff + index_2 * x.numbers[i];
             }
             if (diff < 0) {
                 result.numbers[i] = 10 - abs(diff);
                 result.numbers[i + 1]--;
-            } else {
+            }else {
                 result.numbers[i] = abs(diff);
             }
         }
@@ -665,6 +677,9 @@ namespace IBusko {
 	// FRIENDLY
 	// ----------------------------------------------------------
 	std::ostream& operator << (std::ostream &os, const LongNumber& x) {
+        if(x.get_sign() == LongNumber::NEGATIVE){
+            os << "-";
+        }
 		for(int i = x.get_digits_number() - 1; i >= 0; i--){
             os << x.numbers[i];
         }
