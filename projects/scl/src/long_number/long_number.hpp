@@ -46,8 +46,11 @@ namespace IBusko {
 			int get_digits_number() const;
 			int get_sum() const;
             int get_sign() const;
-            LongNumber left_shift(const LongNumber& x, int start, int end);
+            LongNumber get_subnumber(const LongNumber& divisible, const LongNumber& divider);
+            LongNumber left_shift(const LongNumber& x, int size, LongNumber& start);
+            LongNumber left_shift(const LongNumber& x, int& start, int& end);
             LongNumber leading_of_zeroes(LongNumber&x);
+            void set_subnumber(LongNumber& number, const LongNumber& sub_number, int size_subnumber);
             bool more_compare_by_module(const LongNumber& x);
 			bool is_positive() const;
             bool is_null(const LongNumber& x) const;

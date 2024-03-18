@@ -242,14 +242,14 @@ namespace IBusko {
             result.numbers[i] = 0;
         }
         if(this->get_sign() == x.get_sign()){
-            addition_of_num(numbers, size, result, x);
+            addition_of_num(this->numbers, size, result, x);
             if(is_null(result)){
                 result.sign = NEUTRAL;
             }else{
                 result.sign = x.get_sign();
             }
         }else{
-            subtraction_of_num(numbers, size, result, x);
+            subtraction_of_num(this->numbers, size, result, x);
             if(is_null(result)){
                 result.sign = NEUTRAL;
             }else if(this->more_compare_by_module(x)){
@@ -351,31 +351,38 @@ namespace IBusko {
 	LongNumber LongNumber::operator / (const LongNumber& x) {
         LongNumber result;
         LongNumber zero("0");
-        LongNumber temp1, temp_this;;
+        LongNumber divider, temp2, divisible;
 
         int mx = std::max(this->get_digits_number(), x.get_digits_number());
         int mn = std::min(this->get_digits_number(), x.get_digits_number());
 
-        result.length = mx;
+        int *arr_of_ans = new int[mx];
 
+        for(int i = 0; i < mx; i++){
+            arr_of_ans[i] = -1;
+        }
+
+        result.length = mx;
+        for(int i = 0; i < mx; i++){
+            result.numbers[i] = 0;
+        }
+//
         if(!more_compare_by_module(x)){
             return zero;
         }
         int l = 0 , r = 10, ans = 0, mid = 1;
-        temp1 = x;
-        temp_this = *this;
+        divider = x;
         int count = 0;
+
         for(int j = mx - 1; j >= mn - 1; j--) {
-            std::cout << "this: "<< this << " " << *this << "\n";
-//            std::cout << "temp_this: "<< &temp_this << "\n";
-            LongNumber temp2 = left_shift(temp_this, j, j - mn + 1);
+            temp2 = get_subnumber(divisible, divider);
+
+            temp2 = left_shift(temp_this, x.get_digits_number(), temp2);
             l = 0, r = 10, mid = 0, ans = 0;
-//            std::cout << "before_this: " << this << " " << *this << "\n";
-            std::cout << "temp2: " << temp2 << "\n";
             while(l <= r) {
                 mid = (l + r) / 2;
                 LongNumber k = convert_int_to_big_integer(mid);
-                LongNumber t = temp1 * k;
+                LongNumber t = divider * k;
 
                 if ((t < temp2) || (t == temp2)) {
                     ans = mid;
@@ -384,28 +391,76 @@ namespace IBusko {
                     r = mid - 1;
                 }
             }
-            std::cout << "ans: " << ans << "\n";
-//            std::cout << "after_this: " << this << " " << *this << "\n";
             LongNumber k = convert_int_to_big_integer(ans);
-            LongNumber divider = temp1 * k;
-            std::cout << "divider: " << divider << "\n";
-            //different_of_digit(temp_this, divider);
-//                std::cout << "diff: " << temp2 - temp1 * k << "\n";
-            std::cout << ans << "\n";
-            result.numbers[j] = ans;
+            LongNumber temp = divider * k;
+
+            LongNumber different = temp2 - temp;
+
+            arr_of_ans[j] = ans;
+
+            set_subnumber(divisible, different, temp2.get_digits_number());
         }
-        std::cout << "++end" << "\n";
+        int len_arr_of_ans = mx;
+
+        for(int i = 0; i < mx; i++){
+            if(arr_of_ans[i] != -1){
+                len_arr_of_ans--;
+            }
+        }
+
+        for(int i = mx - 1; i >= len_arr_of_ans; i--){
+            result.numbers[i - len_arr_of_ans] = arr_of_ans[i];
+        }
+
+        delete[] arr_of_ans;
         return result;
 	}
 
 	LongNumber LongNumber::operator % (const LongNumber& x) {
-		// TODO
-		LongNumber result;
-		return result;
+        LongNumber result;
+        LongNumber zero("0");
+        LongNumber divider, temp2, divisible, different;
+
+        int mx = std::max(this->get_digits_number(), x.get_digits_number());
+        int mn = std::min(this->get_digits_number(), x.get_digits_number());
+
+        if(!more_compare_by_module(x)){
+            return *this;
+        }
+        int l = 0 , r = 10, ans = 0, mid = 1;
+        divider = x;
+        int count = 0;
+
+        for(int j = mx - 1; j >= mn - 1; j--) {
+            temp2 = get_subnumber(divisible, divider);
+
+            temp2 = left_shift(temp_this, x.get_digits_number(), temp2);
+            l = 0, r = 10, mid = 0, ans = 0;
+            while(l <= r) {
+                mid = (l + r) / 2;
+                LongNumber k = convert_int_to_big_integer(mid);
+                LongNumber t = divider * k;
+
+                if ((t < temp2) || (t == temp2)) {
+                    ans = mid;
+                    l = mid + 1;
+                }else{
+                    r = mid - 1;
+                }
+            }
+            LongNumber k = convert_int_to_big_integer(ans);
+            LongNumber temp = divider * k;
+
+            different = temp2 - temp;
+
+            set_subnumber(divisible, different, temp2.get_digits_number());
+        }
+        result = different;
+
+        return result;
 	}
 
-    void LongNumber::different_of_digit(IBusko::LongNumber &x, const IBusko::LongNumber &y) {
-
+    void LongNumber::different_of_digit(LongNumber &x, const LongNumber &y) {
         int size_x = x.get_digits_number();
         int size_y= y.get_digits_number();
         for(int i = size_x - 1; i >= size_y; i--){
@@ -439,27 +494,63 @@ namespace IBusko {
         }
         return false;
     }
-    LongNumber LongNumber::left_shift(const IBusko::LongNumber &x, int start, int end) {
+    LongNumber LongNumber::left_shift(const LongNumber &x, int& start, int& end) {
         LongNumber result;
-        std::cout << &x << "\n";
         result.length = start - end + 1;
         result.sign = POSITIVE;
+        int s = start, e = end;
 
         for(int i = 0; i < result.length; i++){
             result.numbers[i] = 0;
         }
-        for(int i = end; i <= start; i++){
-            result.numbers[i - end] = x.numbers[i];
+        for(int i = s; i >= e; i--){
+            result.numbers[i - e] = x.numbers[i];
         }
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 
+        result = leading_of_zeroes(result);
+
         return result;
     }
+    LongNumber LongNumber::get_subnumber(const LongNumber &divisible, const LongNumber &divider) {
+        LongNumber result, temp("0");
+        int i1 = divisible.get_digits_number() - 1, i2 = divisible.get_digits_number() - 1;
 
+        while(temp < divider){
+            if(i2 < 0){
+                break;
+            }
+            temp = left_shift(divisible, i1, i2);
+            i2--;
+        }
+        std::cout << "out" << "\n";
+        result = temp;
+
+        return result;
+    }
+    void LongNumber::set_subnumber(LongNumber &number, const LongNumber &sub_number, int size_subnumber) {
+        int size = number.get_digits_number() - 1;
+        int inx_snum = sub_number.get_digits_number() - 1;
+        int count = 0;
+
+//        std::cout << size << " " << size_subnumber << " " << sub_number.get_digits_number() << " " << inx_snum << "\n" << "\t";
+        for(int i = size; i >= size_subnumber - size; i--){
+            std::cout << number.numbers[i];
+            if(sub_number.get_digits_number() + count < size_subnumber){
+                count++;
+                number.numbers[i] = 0;
+            }else{
+                number.numbers[i] = sub_number.numbers[inx_snum];
+                inx_snum--;
+            }
+        }
+        std::cout << "\noutput\n";
+        number = leading_of_zeroes(number);
+    }
 	bool LongNumber::is_positive() const {
 		return sign == POSITIVE;
 	}
-    bool LongNumber::is_null(const IBusko::LongNumber &x) const {
+    bool LongNumber::is_null(const LongNumber &x) const {
         if(x.get_digits_number() == 1)
             return x.numbers[0] == 0;
         if(x.get_digits_number() == 2)
@@ -536,7 +627,7 @@ namespace IBusko {
         s *= sign;
 		return s;
 	}
-    LongNumber LongNumber::leading_of_zeroes(IBusko::LongNumber &x) {
+    LongNumber LongNumber::leading_of_zeroes(LongNumber &x) {
         LongNumber result;
         result.sign = x.get_sign();
         result.sum = x.get_sum();
@@ -558,7 +649,6 @@ namespace IBusko {
         for(int i = x.get_digits_number() - length_of_tail - 1; i >= 0; i--){
             result.numbers[i] = x.numbers[i];
         }
-
         return result;
     }
     void LongNumber::write_number(const char *const str, int *numbers, int size, int index) {
@@ -572,7 +662,6 @@ namespace IBusko {
             }
         }
     }
-
 	// ----------------------------------------------------------
 	// FRIENDLY
 	// ----------------------------------------------------------

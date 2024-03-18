@@ -332,8 +332,8 @@ int main(int argc, char **argv) {
     IBusko::LongNumber a1 = IBusko::LongNumber("1010205");
     IBusko::LongNumber b1 = IBusko::LongNumber("12");
     IBusko::LongNumber b2 = IBusko::LongNumber("2");
-    IBusko::LongNumber a = IBusko::LongNumber("1236");
-    IBusko::LongNumber b = IBusko::LongNumber("12");
+    IBusko::LongNumber a = IBusko::LongNumber("145");
+    IBusko::LongNumber b = IBusko::LongNumber("15");
     IBusko::LongNumber d = IBusko::LongNumber("-1");
     IBusko::LongNumber thirteen_neg = IBusko::LongNumber("-13");
 //    IBusko::LongNumber one = IBusko::LongNumber("1");
