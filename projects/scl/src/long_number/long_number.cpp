@@ -1,13 +1,13 @@
 #include "long_number.hpp"
 
 namespace IBusko {
-	LongNumber::LongNumber(){
+    LongNumber::LongNumber(){
         this->length = 1;
         this->sign = NEUTRAL;
         this->sum = 0;
         this->numbers = new int[length];
-	}
-	LongNumber::LongNumber(const char* const str) {
+    }
+    LongNumber::LongNumber(const char* const str) {
         int index = 0;
         this->length = get_length(str);
         if(str[0] == MINUS){
@@ -27,10 +27,10 @@ namespace IBusko {
         }
         write_number(str, numbers, length, index);
 
-		this->sum = sum_of_arr(numbers, length, sign);
-	}
+        this->sum = sum_of_arr(numbers, length, sign);
+    }
 
-	LongNumber::LongNumber(const LongNumber& x) {
+    LongNumber::LongNumber(const LongNumber& x) {
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -41,9 +41,9 @@ namespace IBusko {
                 this->numbers[i] = x.numbers[i];
             }
         }
-	}
+    }
 
-	LongNumber::LongNumber(LongNumber&& x) {
+    LongNumber::LongNumber(LongNumber&& x) {
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
         this->sum = x.get_sum();
@@ -58,14 +58,25 @@ namespace IBusko {
         x.sum = 0;
         x.sign = 0;
 
-	}
+    }
+    LongNumber::LongNumber(int len) {
+        this->length = len;
+        this->sign = NEUTRAL;
+        this->sum = 0;
+        this->numbers = new int[length];
 
-	LongNumber::~LongNumber() {
-		delete[] numbers;
+        for(int i = 0; i < length; i++){
+            this->numbers[i] = 0;
+        }
+
+    }
+
+    LongNumber::~LongNumber() {
+        delete[] numbers;
         numbers = nullptr;
-	}
+    }
 
-	LongNumber& LongNumber::operator = (const char* const str) {
+    LongNumber& LongNumber::operator = (const char* const str) {
         int index = 0;
         this->length = get_length(str);
         if(str[0] == MINUS){
@@ -92,10 +103,10 @@ namespace IBusko {
 
         this->sum = sum_of_arr(numbers, length, sign);
 
-		return *this;
-	}
+        return *this;
+    }
 
-	LongNumber& LongNumber::operator = (const LongNumber& x) {
+    LongNumber& LongNumber::operator = (const LongNumber& x) {
         if(this == &x) return *this;
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
@@ -109,10 +120,10 @@ namespace IBusko {
         for(int i = 0; i < length; i++){
             numbers[i] = x.numbers[i];
         }
-		return *this;
-	}
+        return *this;
+    }
 
-	LongNumber& LongNumber::operator=(LongNumber &&x){
+    LongNumber& LongNumber::operator = (LongNumber &&x){
         if(this == &x) return *this;
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
@@ -129,10 +140,10 @@ namespace IBusko {
         x.sum = 0;
         x.sign = 0;
 
-		return *this;
-	}
+        return *this;
+    }
 
-	bool LongNumber::operator == (const LongNumber& x) {
+    bool LongNumber::operator == (const LongNumber& x) const{
         if(this->get_sign() == NEUTRAL && x.get_sign() == NEUTRAL && this->numbers[0] == 0 && x.numbers[0] == 0){
             return true;
         }
@@ -149,10 +160,10 @@ namespace IBusko {
             }
         }
 
-		return true;
-	}
+        return true;
+    }
 
-	bool LongNumber::operator > (const LongNumber& x) {
+    bool LongNumber::operator > (const LongNumber& x) const{
         if(this->get_sign() == NEUTRAL && x.get_sign() == NEUTRAL && this->numbers[0] == 0 && x.numbers[0] == 0){
             return false;
         }
@@ -187,10 +198,10 @@ namespace IBusko {
                 }
             }
         }
-		return false;
-	}
+        return false;
+    }
 
-	bool LongNumber::operator < (const LongNumber& x) {
+    bool LongNumber::operator < (const LongNumber& x) const{
         if(this->get_sign() == NEUTRAL && x.get_sign() == NEUTRAL && this->numbers[0] == 0 && x.numbers[0] == 0){
             return false;
         }
@@ -228,15 +239,22 @@ namespace IBusko {
             }
         }
         return false;
-	}
+    }
 
-	LongNumber LongNumber::operator + (const LongNumber& x) {
-        LongNumber result;
+    bool LongNumber::operator <= (const IBusko::LongNumber &x) const{
+        return (*this == x || *this < x);
+    }
+    bool LongNumber::operator >= (const IBusko::LongNumber &x) const{
+        return (*this == x || *this > x);
+    }
+    bool LongNumber::operator != (const IBusko::LongNumber &x) const{
+        return !(*this == x);
+    }
 
+    LongNumber LongNumber::operator + (const LongNumber& x){
         int size = std::max(x.get_digits_number(), this->get_digits_number()) + 1;
 
-        result.length = size;
-        result.numbers = new int[size];
+        LongNumber result(size);
 
         for(int i = 0; i < result.get_digits_number(); i++){
             result.numbers[i] = 0;
@@ -249,7 +267,7 @@ namespace IBusko {
                 result.sign = x.get_sign();
             }
         }else{
-            if(!more_compare_by_module(x)){
+            if(equal_by_module(x, '<')){
                 subtraction_of_num(x, result, *this);
             }else{
                 subtraction_of_num(*this, result, x);
@@ -257,7 +275,7 @@ namespace IBusko {
 
             if(is_null(result)){
                 result.sign = NEUTRAL;
-            }else if(this->more_compare_by_module(x)){
+            }else if(equal_by_module(x, '>')){
                 result.sign = this->get_sign();
             }else{
                 result.sign = x.get_sign();
@@ -265,19 +283,15 @@ namespace IBusko {
 
         }
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
-
-        result = leading_of_zeroes(result);
+        result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
 
         return result;
-	}
+    }
 
-	LongNumber LongNumber::operator - (const LongNumber& x) {
-        LongNumber result;
-
+    LongNumber LongNumber::operator - (const LongNumber& x) {
         int size = std::max(x.get_digits_number(), this->get_digits_number()) + 1;
 
-        result.length = size;
-        result.numbers = new int[size];
+        LongNumber result(size);
 
         for(int i = 0; i < result.length; i++){
             result.numbers[i] = 0;
@@ -291,7 +305,7 @@ namespace IBusko {
                 result.sign = this->get_sign();
             }
         }else{
-            if(!more_compare_by_module(x)){
+            if(equal_by_module(x, '<')){
                 subtraction_of_num(x, result, *this);
             }else{
                 subtraction_of_num(*this, result, x);
@@ -306,20 +320,17 @@ namespace IBusko {
         }
 
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
-
-        result = leading_of_zeroes(result);
+        result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
 
         return result;
-	}
+    }
 
-	LongNumber LongNumber::operator * (const LongNumber& x) {
-        LongNumber result;
+    LongNumber LongNumber::operator * (const LongNumber& x) {
         LongNumber zero("0");
 
         int size = x.get_digits_number() + this->get_digits_number() + 1;
 
-        result.length = size;
-        result.numbers = new int[size];
+        LongNumber result(size);
 
         for(int i = 0; i < result.length; i++){
             result.numbers[i] = 0;
@@ -352,48 +363,48 @@ namespace IBusko {
             result.sign = NEGATIVE;
         }
         result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
-        result = leading_of_zeroes(result);
+        result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
 
-		return result;
-	}
+        return result;
+    }
 
 
-	LongNumber LongNumber::operator / (const LongNumber& x) {
-        LongNumber result;
+    LongNumber LongNumber::operator / (const LongNumber& x) {
         LongNumber zero("0");
-        LongNumber divider, temp2, divisible;
+        LongNumber neg("-1");
+        LongNumber divider, temp2, divisible, different;
 
-        int mx = std::max(this->get_digits_number(), x.get_digits_number());
-        int mn = std::min(this->get_digits_number(), x.get_digits_number());
+        int size = std::max(this->get_digits_number(), x.get_digits_number()) + 2;
 
-        int *arr_of_ans = new int[mx];
+        int *arr_of_ans = new int[size];
 
-        for(int i = 0; i < mx; i++){
+        for(int i = 0; i < size; i++){
             arr_of_ans[i] = -1;
         }
 
-        result.length = mx;
-        for(int i = 0; i < mx; i++){
-            result.numbers[i] = 0;
-        }
-
-        if(!more_compare_by_module(x)){
+        LongNumber result(size);
+        if(equal_by_module(x, '<')){
             return zero;
         }
-        int l = 0 , r = 10, ans = 0, mid = 1;
+        int l = 0 , r = 10, ans = 0, mid = 0;
         divider = x;
         divisible = *this;
-
-        int count = 0;
-        for(int j = mx - 1; j >= mn - 1; j--) {
-            temp2 = get_subnumber(divisible, divider);
-            l = 0, r = 10, mid = 0, ans = 0;
+        if(*this < zero){
+            divisible = divisible * neg;
+        }
+        if(divider < zero){
+            divider = divider * neg;
+        }
+        int j = 0;
+        int len = divisible.get_digits_number();
+        while(true){
+            LongNumber temp = right_shift(divider, len);
+            l = 0, r = 10, ans = 0;
             while(l <= r) {
                 mid = (l + r) / 2;
                 LongNumber k = convert_int_to_big_integer(mid);
-                LongNumber t = divider * k;
-
-                if ((t < temp2) || (t == temp2)) {
+                LongNumber t = temp * k;
+                if (t <= divisible) {
                     ans = mid;
                     l = mid + 1;
                 }else{
@@ -401,26 +412,40 @@ namespace IBusko {
                 }
             }
             LongNumber k = convert_int_to_big_integer(ans);
-            LongNumber temp = divider * k;
+            temp = temp * k;
 
-            LongNumber different = temp2 - temp;
+            divisible = divisible - temp;
 
             arr_of_ans[j] = ans;
-
-            set_subnumber(divisible, different, temp2.get_digits_number());
+            if(divisible < divider || len < 1){
+                for(int i = 0;;i++){
+                    j++;
+                    if(temp.numbers[i] != 0){
+                        break;
+                    }
+                    arr_of_ans[j] = 0;
+                }
+                break;
+            }
+            j++;
+            len--;
         }
-        int len_arr_of_ans = mx;
-
-        for(int i = 0; i < mx; i++){
+        int len_arr_of_ans = 0;
+        for(int i = 0; i < size; i++){
             if(arr_of_ans[i] != -1){
-                len_arr_of_ans--;
+                len_arr_of_ans++;
             }
         }
-
-        for(int i = mx - 1; i >= len_arr_of_ans; i--){
-            result.numbers[i - len_arr_of_ans] = arr_of_ans[i];
+        int n = 0;
+        if(arr_of_ans[0] == 0){
+            n++;
         }
-
+        for(int i = 0; i < size - n; i++){
+            if(len_arr_of_ans - i - n - 1 < 0){
+                break;
+            }
+            result.numbers[len_arr_of_ans - i - n - 1] = arr_of_ans[i + n];
+        }
         delete[] arr_of_ans;
 
         if(x.get_sign() == this->get_sign())
@@ -428,147 +453,78 @@ namespace IBusko {
         else
             result.sign = NEGATIVE;
 
-        return result;
-	}
-
-	LongNumber LongNumber::operator % (const LongNumber& x) {
-        LongNumber result;
-        LongNumber zero("0");
-        LongNumber divider, temp2, divisible, different;
-
-        int mx = std::max(this->get_digits_number(), x.get_digits_number());
-        int mn = std::min(this->get_digits_number(), x.get_digits_number());
-
-        if(!more_compare_by_module(x)){
-            return *this;
-        }
-        int l = 0 , r = 10, ans = 0, mid = 1;
-        divider = x;
-        divisible = *this;
-        int count = 0;
-
-        for(int j = mx - 1; j >= mn - 1; j--) {
-            temp2 = get_subnumber(divisible, divider);
-
-            l = 0, r = 10, mid = 0, ans = 0;
-            while(l <= r) {
-                mid = (l + r) / 2;
-                LongNumber k = convert_int_to_big_integer(mid);
-                LongNumber t = divider * k;
-
-                if ((t < temp2) || (t == temp2)) {
-                    ans = mid;
-                    l = mid + 1;
-                }else{
-                    r = mid - 1;
-                }
-            }
-            LongNumber k = convert_int_to_big_integer(ans);
-            LongNumber temp = divider * k;
-
-            different = temp2 - temp;
-
-            set_subnumber(divisible, different, temp2.get_digits_number());
-        }
-        result = different;
+        result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
+        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 
         return result;
-	}
-
-    void LongNumber::different_of_digit(LongNumber &x, const LongNumber &y) {
-        int size_x = x.get_digits_number();
-        int size_y= y.get_digits_number();
-        for(int i = size_x - 1; i >= size_y; i--){
-            x.numbers[i] -= y.numbers[i - size_y];
-        }
     }
-	int LongNumber::get_digits_number() const {
-		return length;
-	}
-	int LongNumber::get_sum() const {
-		return sum;
-	}
+
+    LongNumber LongNumber::operator % (const LongNumber& x) {
+        LongNumber zero("0");
+        LongNumber neg("-1");
+        LongNumber one("1");
+        LongNumber divisible = *this;
+        LongNumber divider = x;
+
+        if(divider < zero){
+            divider = divider * neg;
+        }
+        LongNumber quotient, remainder;
+        if(divisible < zero){
+            divisible = divisible * neg;
+            quotient = divisible / divider + one;
+            remainder = quotient * divider - divisible;
+        }else{
+            quotient = divisible / divider;
+            remainder = divisible - quotient * divider;
+        }
+
+        return remainder;
+    }
+
+    int LongNumber::get_digits_number() const {
+        return length;
+    }
+    int LongNumber::get_sum() const {
+        return sum;
+    }
     int LongNumber::get_sign() const {
         return sign;
     }
-    bool LongNumber::more_compare_by_module(const LongNumber& x) {
-        if(this->get_digits_number() > x.get_digits_number()){
-            return true;
-        }else if(this->get_digits_number() < x.get_digits_number()){
-            return false;
-        }else{
-            for(int i = length-1; i >= 0; i--){
-                if(this->numbers[i] > x.numbers[i]) {
-                    return true;
-                }else if(this->numbers[i] < x.numbers[i]){
-                    return false;
-                }
-            }
+
+    bool LongNumber::equal_by_module(const IBusko::LongNumber &x, char syb) {
+        LongNumber zero("0");
+        LongNumber neg("-1");
+        LongNumber left = *this;
+        LongNumber right = x;
+
+        if(left < zero){
+            left = left * neg;
         }
-        return false;
+        if(right < zero){
+            right = right * neg;
+        }
+        if(syb == '=')
+            return (left == right);
+        else if(syb == '<')
+            return (left < right);
+        else
+            return (left > right);
     }
-    LongNumber LongNumber::left_shift(const LongNumber &x, int& start, int& end) {
-        LongNumber result;
-        result.length = start - end + 1;
-        result.sign = POSITIVE;
-        int s = start, e = end;
 
-        for(int i = 0; i < result.length; i++){
-            result.numbers[i] = 0;
-        }
-        for(int i = s; i >= e; i--){
-            result.numbers[i - e] = x.numbers[i];
-        }
-        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
-
-        result = leading_of_zeroes(result);
-
-        return result;
+    bool LongNumber::is_positive() const {
+        return sign == POSITIVE;
     }
-    LongNumber LongNumber::get_subnumber(const LongNumber &divisible, const LongNumber &divider) {
-        LongNumber result, temp("0");
-        int i1 = divisible.get_digits_number() - 1, i2 = divisible.get_digits_number() - 1;
-        while(temp < divider){
-            if(i2 < 0){
-                break;
-            }
-            temp = left_shift(divisible, i1, i2);
-            i2--;
-        }
-        result = temp;
-
-        return result;
-    }
-    void LongNumber::set_subnumber(LongNumber &number, const LongNumber &sub_number, int size_subnumber) {
-        int size = number.get_digits_number() - 1;
-        int inx_snum = sub_number.get_digits_number() - 1;
-        int count = 0;
-
-        for(int i = size; i >= size_subnumber - size; i--){
-            std::cout << number.numbers[i];
-            if(sub_number.get_digits_number() + count < size_subnumber){
-                count++;
-                number.numbers[i] = 0;
-            }else{
-                number.numbers[i] = sub_number.numbers[inx_snum];
-                inx_snum--;
-            }
-        }
-        number = leading_of_zeroes(number);
-    }
-	bool LongNumber::is_positive() const {
-		return sign == POSITIVE;
-	}
     bool LongNumber::is_null(const LongNumber &x) const {
-        if(x.get_digits_number() == 1)
-            return x.numbers[0] == 0;
-        if(x.get_digits_number() == 2)
-            return (x.numbers[0] == 0 && x.numbers[1] == 0);
-        return (x.numbers[0] == 0 && x.numbers[1] == 0 && x.numbers[2] == 0 && x.numbers[x.get_digits_number() - 1] == 0 && x.numbers[x.get_digits_number() - 2] == 0);
+        for(int i = 0; i < x.get_digits_number(); i++){
+            if(x.numbers[i] != 0)
+                return false;
+        }
+        return true;
     }
-	// ----------------------------------------------------------
-	// PRIVATE
-	// ----------------------------------------------------------
+    // ----------------------------------------------------------
+    // PRIVATE
+    // ----------------------------------------------------------
     void LongNumber::addition_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x) {
         short sum;
         for(int i = 0; i < size - 1; i++){
@@ -593,73 +549,73 @@ namespace IBusko {
 
         return result;
     }
-	int LongNumber::get_length(const char* const str) const {
-        int length = 0;
-        while (str[length] != END) {
-            length++;
+    LongNumber LongNumber::right_shift(const LongNumber& x, int len){
+        LongNumber result(len);
+        result.sign = POSITIVE;
+
+        for(int i = x.get_digits_number() - 1; i >= 0; i--){
+            result.numbers[len - x.get_digits_number() + i] = x.numbers[i];
         }
-        return length;
+        return result;
+    }
+    int LongNumber::get_length(const char* const str) const {
+        int size = 0;
+        while (str[size] != END) {
+            size++;
+        }
+        return size;
     }
     void LongNumber::subtraction_of_num(const LongNumber& x, LongNumber& result, const LongNumber& y) {
         short diff, index_1, index_2;
-        if(x.get_sign() == NEGATIVE){
-            index_1 = 1;
-            index_2 = -1;
-        }else{
-            index_1 = -1;
-            index_2 = 1;
+        LongNumber zero("0");
+        LongNumber neg("-1");
+        LongNumber left = x;
+        LongNumber right = y;
+
+        if(left < zero){
+            left = left * neg;
         }
-        for(int i = x.get_digits_number() - 1; i >= 0; i--) {
+        if(right < zero){
+            right = right * neg;
+        }
+        for(int i = 0; i < x.get_digits_number(); i++) {
             diff = 0;
 
-            if (y.length > i) {
-                diff = diff + index_1 * y.numbers[i];
+            if (left.get_digits_number() > i) {
+                result.numbers[i] += left.numbers[i];
             }
-            if (x.get_digits_number() > i) {
-                diff = diff + index_2 * x.numbers[i];
+            if (right.get_digits_number() > i) {
+                result.numbers[i] -= right.numbers[i];
             }
-            if (diff < 0) {
-                result.numbers[i] = 10 - abs(diff);
+            if (result.numbers[i] < 0) {
+                result.numbers[i] = 10 - abs(result.numbers[i]);
                 result.numbers[i + 1]--;
-            }else {
-                result.numbers[i] = abs(diff);
             }
         }
     }
 
-	int LongNumber::sum_of_arr(int* numbers, int size, int sign) const {
-		int s = 0;
+    int LongNumber::sum_of_arr(int* numbers, int size, int sign) const {
+        int s = 0;
         if(sign == NEUTRAL)
             return 0;
         for(int i = 0; i < size; i++){
             s += pow(10, i) * numbers[i];
         }
         s *= sign;
-		return s;
-	}
-    LongNumber LongNumber::leading_of_zeroes(LongNumber &x) {
-        LongNumber result;
-        result.sign = x.get_sign();
-        result.sum = x.get_sum();
-        if(x.get_sum() == 0){
-            result.sign = NEUTRAL;
-            result.length = 1;
-            result.numbers[0] = 0;
-            return result;
-        }
-        int length_of_tail = 0;
+        return s;
+    }
+    int LongNumber::leading_of_zeroes(const int* const num, int size = 0){
+        int length = size;
+        int i = size - 1;
 
-        for(int i = x.get_digits_number() - 1; i >= 0; i--){
-            if(x.numbers[i] != 0){
-                result.length = x.get_digits_number() - length_of_tail;
-                break;
-            }
-            length_of_tail++;
+        while(num[i] == 0){
+            length--;
+            i--;
         }
-        for(int i = x.get_digits_number() - length_of_tail - 1; i >= 0; i--){
-            result.numbers[i] = x.numbers[i];
+        if(length == 0){
+            return 1;
         }
-        return result;
+        return length;
     }
     void LongNumber::write_number(const char *const str, int *numbers, int size, int index) {
         if(is_positive()){
@@ -672,17 +628,18 @@ namespace IBusko {
             }
         }
     }
-	// ----------------------------------------------------------
-	// FRIENDLY
-	// ----------------------------------------------------------
-	std::ostream& operator << (std::ostream &os, const LongNumber& x) {
+    // ----------------------------------------------------------
+    // FRIENDLY
+    // ----------------------------------------------------------
+    std::ostream& operator << (std::ostream &os, const LongNumber& x) {
         if(x.get_sign() == LongNumber::NEGATIVE){
             os << "-";
         }
-		for(int i = x.get_digits_number() - 1; i >= 0; i--){
+
+        for(int i = x.get_digits_number() - 1; i >= 0; i--){
             os << x.numbers[i];
         }
-        os << std::ends;
-		return os;
-	}
+
+        return os;
+    }
 }
