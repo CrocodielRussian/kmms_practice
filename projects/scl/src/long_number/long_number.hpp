@@ -46,7 +46,6 @@ namespace IBusko {
         LongNumber operator / (const LongNumber& x);
         LongNumber operator % (const LongNumber& x);
 
-        int get_sum() const;
         int get_digits_number() const;
         int get_sign() const;
         bool is_positive() const;
@@ -61,7 +60,6 @@ namespace IBusko {
         void addition_of_num(int* numbers, int size, LongNumber& result, const LongNumber& x);
         LongNumber convert_int_to_big_integer(int num);
         int get_length(const char* const str) const;
-        int sum_of_arr(int* numbers, int size, int sign) const;
         void subtraction_of_num(const LongNumber& x, LongNumber& result, const LongNumber& y);
         void write_number(const char* const str, int* numbers, int size, int index);
     };

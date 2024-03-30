@@ -13,16 +13,6 @@ TEST(get_digits_number, check_negative) {
     ASSERT_EQ(1, x.get_digits_number())
         << "Is not equals length of negative number " << x.get_digits_number() << x;
 }
-TEST(get_numbers, check_sum1) {
-	IBusko::LongNumber x("12345");
-	ASSERT_EQ(12345, x.get_sum())
-		<< "Trouble with write positive num " << x.get_sum();
-}
-TEST(get_numbers, check_sum2) {
-    IBusko::LongNumber x("-12345");
-    ASSERT_EQ(-12345, x.get_sum())
-    << "Trouble with write negative num " << x.get_sum();
-}
 class EqualityFixture : public testing::Test {
 	public:
 		IBusko::LongNumber one_v1 = IBusko::LongNumber("1");
@@ -287,7 +277,7 @@ TEST_F(MultiplicationFixture, multiplicate_two_neg_num2){
 }
 TEST_F(MultiplicationFixture, simple_multiplication3){
     IBusko::LongNumber a = nine * two;
-    ASSERT_EQ(p_18, a.get_sum())
+    ASSERT_EQ(p_18, a)
         << "It's not 18";
 }
 TEST_F(MultiplicationFixture, multiplicate_two_neg_num3){

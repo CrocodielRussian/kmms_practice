@@ -4,7 +4,6 @@ namespace IBusko {
     LongNumber::LongNumber(){
         this->length = 1;
         this->sign = NEUTRAL;
-        this->sum = 0;
         this->numbers = new int[length];
     }
     LongNumber::LongNumber(const char* const str) {
@@ -27,13 +26,11 @@ namespace IBusko {
         }
         write_number(str, numbers, length, index);
 
-        this->sum = sum_of_arr(numbers, length, sign);
     }
 
     LongNumber::LongNumber(const LongNumber& x) {
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
-        this->sum = x.get_sum();
         this->numbers = new int[length];
 
         if(x.numbers != nullptr){
@@ -46,7 +43,6 @@ namespace IBusko {
     LongNumber::LongNumber(LongNumber&& x) {
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
-        this->sum = x.get_sum();
 
         this->numbers = new int[length];
 
@@ -55,14 +51,12 @@ namespace IBusko {
         }
         x.numbers = nullptr;
         x.length = 0;
-        x.sum = 0;
         x.sign = 0;
 
     }
     LongNumber::LongNumber(int len) {
         this->length = len;
         this->sign = NEUTRAL;
-        this->sum = 0;
         this->numbers = new int[length];
 
         for(int i = 0; i < length; i++){
@@ -101,7 +95,6 @@ namespace IBusko {
 
         write_number(str, numbers, length, index);
 
-        this->sum = sum_of_arr(numbers, length, sign);
 
         return *this;
     }
@@ -110,7 +103,6 @@ namespace IBusko {
         if(this == &x) return *this;
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
-        this->sum = x.get_sum();
 
         if(this->numbers != nullptr){
             delete[] this->numbers;
@@ -127,7 +119,6 @@ namespace IBusko {
         if(this == &x) return *this;
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
-        this->sum = x.get_sum();
 
         if(this->numbers != nullptr) {
             delete[] this->numbers;
@@ -137,7 +128,6 @@ namespace IBusko {
 
         x.numbers = nullptr;
         x.length = 0;
-        x.sum = 0;
         x.sign = 0;
 
         return *this;
@@ -282,7 +272,6 @@ namespace IBusko {
             }
 
         }
-        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
         result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
 
         return result;
@@ -319,7 +308,6 @@ namespace IBusko {
             }
         }
 
-        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
         result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
 
         return result;
@@ -362,7 +350,6 @@ namespace IBusko {
         }else{
             result.sign = NEGATIVE;
         }
-        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
         result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
 
         return result;
@@ -454,7 +441,6 @@ namespace IBusko {
             result.sign = NEGATIVE;
 
         result.length = leading_of_zeroes(result.numbers, result.get_digits_number());
-        result.sum = sum_of_arr(result.numbers, result.get_digits_number(), result.get_sign());
 
         return result;
     }
@@ -484,9 +470,6 @@ namespace IBusko {
 
     int LongNumber::get_digits_number() const {
         return length;
-    }
-    int LongNumber::get_sum() const {
-        return sum;
     }
     int LongNumber::get_sign() const {
         return sign;
@@ -544,7 +527,6 @@ namespace IBusko {
 
         result.length = 1;
         result.sign = POSITIVE;
-        result.sum = num;
         result.numbers[0] = num;
 
         return result;
@@ -594,16 +576,6 @@ namespace IBusko {
         }
     }
 
-    int LongNumber::sum_of_arr(int* numbers, int size, int sign) const {
-        int s = 0;
-        if(sign == NEUTRAL)
-            return 0;
-        for(int i = 0; i < size; i++){
-            s += pow(10, i) * numbers[i];
-        }
-        s *= sign;
-        return s;
-    }
     int LongNumber::leading_of_zeroes(const int* const num, int size = 0){
         int length = size;
         int i = size - 1;
