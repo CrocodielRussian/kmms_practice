@@ -44,11 +44,8 @@ namespace IBusko {
         this->length = x.get_digits_number();
         this->sign = x.get_sign();
 
-        this->numbers = new int[length];
+        this->numbers = x.numbers;
 
-        for(int i = 0; i < length; i++){
-            numbers[i] = x.numbers[i];
-        }
         x.numbers = nullptr;
         x.length = 0;
         x.sign = 0;
